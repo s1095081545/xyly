@@ -1,6 +1,11 @@
 export const state = () => {
   return {
-    searchHistory: []
+    // 查询历史列表
+    searchHistory: [],
+    // 订单详情
+    orderDetail: {},
+    // 订单总价格
+    allPrice:0,
   };
 };
 
@@ -10,6 +15,12 @@ export const mutations = {
     if (state.searchHistory.length > 5) {
       state.searchHistory.length = 5;
     }
+  },
+  setOrderDetail(state, data) {
+    state.orderDetail = data;
+  },
+  setAllPrice(state,data){
+    state.allPrice=data;
   }
 };
 export const actions = {

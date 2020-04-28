@@ -7,5 +7,9 @@ export default nuxt => {
     if (status === 400) {
       Message.error(message);
     }
+    if (status === 403||status===401) {
+      Message.error("需登录后才能操作");
+      nuxt.redirect("/user/login");
+    }
   });
 };

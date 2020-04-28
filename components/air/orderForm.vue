@@ -1,12 +1,21 @@
 <template>
-  <div class="main">
+  <!-- 触发allPrice监听 -->
+  <div class="main" :class="allPrice">
     <div class="air-column">
       <h2>剩机人</h2>
       <el-form class="member-info" :model="form" :rules="rules" ref="form">
-        <div class="member-info-item" v-for="(item, index) in form.users" :key="index">
+        <div
+          class="member-info-item"
+          v-for="(item, index) in form.users"
+          :key="index"
+        >
           <el-form-item prop="users">
             <el-form-item label="乘机人类型">
-              <el-input placeholder="姓名" class="input-with-select" v-model="item.username">
+              <el-input
+                placeholder="姓名"
+                class="input-with-select"
+                v-model="item.username"
+              >
                 <el-select slot="prepend" value="1" placeholder="请选择">
                   <el-option label="成人" value="1"></el-option>
                 </el-select>
@@ -14,9 +23,17 @@
             </el-form-item>
 
             <el-form-item label="证件类型">
-              <el-input placeholder="证件号码" class="input-with-select" v-model="item.id">
+              <el-input
+                placeholder="证件号码"
+                class="input-with-select"
+                v-model="item.id"
+              >
                 <el-select slot="prepend" value="1" placeholder="请选择">
-                  <el-option label="身份证" value="1" :checked="true"></el-option>
+                  <el-option
+                    label="身份证"
+                    value="1"
+                    :checked="true"
+                  ></el-option>
                 </el-select>
               </el-input>
             </el-form-item>
@@ -26,13 +43,19 @@
         </div>
       </el-form>
 
-      <el-button class="add-member" type="primary" @click="handleAddUsers">添加乘机人</el-button>
+      <el-button class="add-member" type="primary" @click="handleAddUsers"
+        >添加乘机人</el-button
+      >
     </div>
 
     <div class="air-column">
       <h2>保险</h2>
       <div>
-        <div class="insurance-item" v-for="(item, index) in detail.insurances" :key="index">
+        <div
+          class="insurance-item"
+          v-for="(item, index) in detail.insurances"
+          :key="index"
+        >
           <el-checkbox
             :label="
               `${item.type}：￥${item.price}/份×1  最高赔付${item.compensation}`
@@ -64,7 +87,9 @@
             <el-input v-model="form.captcha"></el-input>
           </el-form-item>
         </el-form>
-        <el-button type="warning" class="submit" @click="handleSubmit">提交订单</el-button>
+        <el-button type="warning" class="submit" @click="handleSubmit"
+          >提交订单</el-button
+        >
       </div>
     </div>
   </div>
@@ -106,14 +131,39 @@ export default {
       }
     };
   },
+  computed: {
+    // 计算总价钱
+    allPrice() {
+      let price = 0;
+      const detail = this.detail;
+      if (!detail.seat_infos) return price;
+      price += detail.seat_infos.org_settle_price; //单人基础价钱
+      price += detail.airport_tax_audlet; //机建费
+      this.form.insurances.forEach(item => {
+        detail.insurances.forEach(v => {
+          if (item === v.id) price += v.price; //保险费
+        });
+      });
+
+      price *= this.form.users.length; //多人费用
+
+      this.$store.commit("air/setAllPrice", price);
+      return price;
+    }
+  },
   mounted() {
     const { id, seat_xid } = this.$route.query;
     this.form.seat_xid = seat_xid;
     this.form.air = id;
-    this.$axios({ url: `/airs/${id}` }).then(res => {
+    this.$axios({
+      url: `/airs/${id}`,
+      params: {
+        seat_xid
+      }
+    }).then(res => {
       const { data } = res;
       this.detail = data;
-      console.log(data);
+      this.$store.commit("air/setOrderDetail", data);
     });
   },
   methods: {
@@ -139,7 +189,6 @@ export default {
     // 发送手机验证码
     handleSendCaptcha() {
       const tel = this.form.contactPhone;
-      console.log(tel);
       this.$store.dispatch("user/sendCaptcha", { tel }).then(res => {
         this.$message.success(`验证码是:${res}`);
         this.form.captcha = res;
@@ -148,17 +197,31 @@ export default {
 
     // 提交订单
     handleSubmit() {
-      // token: `Bearer `+token
-      console.log(this.form);
       let flag = false;
       this.$refs.form.validate(valid => {
         flag = valid ? true : false;
       });
       this.$refs.form2.validate(valid => {
-        flag =flag? valid ? true : false:false;
+        flag = flag ? (valid ? true : false) : false;
       });
-      if (flag ) {
-        console.log(true);
+      if (flag) {
+        const Authorization = `Bearer ` + this.$store.state.user.userInfo.token;
+        this.$axios({
+          url: `/airorders`,
+          method: "post",
+          data: this.form,
+          headers: {
+            Authorization
+          }
+        }).then(res => {
+          const { data } = res.data;
+          this.$router.push({
+            path: "/air/pay",
+            query: {
+              id: data.id
+            }
+          });
+        });
       }
     }
   }

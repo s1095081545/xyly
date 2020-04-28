@@ -42,7 +42,7 @@ export default {
         if (valid) {
           this.$store.dispatch("user/login", this.form).then(res => {
             this.$message.success("登录成功");
-            this.$router.push("/");
+            this.$router.back();
           });
         } else {
           return false;

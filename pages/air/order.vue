@@ -6,7 +6,7 @@
 
       <!-- 侧边栏 -->
       <div class="aside">
-        <OrderAside/>
+        <OrderAside :data="$store.state.air.orderDetail" :allPrice="$store.state.air.allPrice"/>
       </div>
     </el-row>
   </div>
@@ -17,7 +17,7 @@ import OrderForm from "@/components/air/orderForm";
 import OrderAside from "@/components/air/orderAside";
 export default {
   components: {
-    OrderForm
+    OrderForm,OrderAside
   }
 };
 </script>

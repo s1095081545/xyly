@@ -8,18 +8,21 @@
         <!-- 航班头部布局 -->
         <FlightsListHead />
 
-        <!-- 航班信息 -->
-        <FlightsItem v-for="(item, index) in list" :data="item" :key="`${pageIndex}-${index}`" />
-        <!-- 分页 -->
-        <el-pagination
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
-          :current-page="pageIndex"
-          :page-sizes="[5, 10, 15, 20]"
-          :page-size="pageSize"
-          layout="total, sizes, prev, pager, next, jumper"
-          :total="lists.total"
-        ></el-pagination>
+        <div v-if="!isTxt">
+          <!-- 航班信息 -->
+          <FlightsItem v-for="(item, index) in list" :data="item" :key="`${pageIndex}-${index}`" />
+          <!-- 分页 -->
+          <el-pagination
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+            :current-page="pageIndex"
+            :page-sizes="[5, 10, 15, 20]"
+            :page-size="pageSize"
+            layout="total, sizes, prev, pager, next, jumper"
+            :total="lists.total"
+          ></el-pagination>
+        </div>
+        <div class="txt" v-if="isTxt">当前没有航班啦</div>
       </div>
 
       <!-- 侧边栏 -->
@@ -51,6 +54,7 @@ export default {
         flights: [],
         options: {}
       },
+      isTxt: false, //是否显示文字
       //总航班信息,不允许改变的
       listsCache: {
         info: {},
@@ -75,8 +79,8 @@ export default {
       return list;
     }
   },
-  watch:{
-    $route(){
+  watch: {
+    $route() {
       this.getLists();
     }
   },
@@ -90,6 +94,7 @@ export default {
         res => {
           this.lists = res.data;
           this.listsCache = { ...res.data };
+          this.isTxt = this.lists.flights.length ? false : true; //是否显示提示文字
         }
       );
     },
@@ -119,7 +124,11 @@ export default {
   width: 1000px;
   margin: 20px auto;
 }
-
+.txt {
+  color: #999;
+  line-height: 200px;
+  text-align: center;
+}
 .flights-content {
   width: 745px;
   font-size: 14px;

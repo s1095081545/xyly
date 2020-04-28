@@ -2,20 +2,25 @@
   <div class="aside">
     <div class="air-info">
       <el-row type="flex" justify="space-between" class="info-top">
-        <div>{{data.dep_date}}</div>
-        <div>{{data.org_city_name}} - {{data.dst_city_name}}</div>
+        <div>{{ data.dep_date }}</div>
+        <div>{{ data.org_city_name }} - {{ data.dst_city_name }}</div>
       </el-row>
-      <el-row type="flex" justify="space-between" align="middle" class="info-step">
+      <el-row
+        type="flex"
+        justify="space-between"
+        align="middle"
+        class="info-step"
+      >
         <el-col :span="5" class="flight-airport">
-          <strong>{{data.dep_time}}</strong>
-          <span>{{data.org_airport_name}}{{data.org_airport_quay}}</span>
+          <strong>{{ data.dep_time }}</strong>
+          <span>{{ data.org_airport_name }}{{ data.org_airport_quay }}</span>
         </el-col>
         <el-col :span="14" class="flight-time">
-          <span>--- {{rankTime}} ---</span>
-          <span>{{data.airline_name}}{{data.flight_no}}</span>
+          <span>--- {{ rankTime }} ---</span>
+          <span>{{ data.airline_name }}{{ data.flight_no }}</span>
         </el-col>
         <el-col :span="5" class="flight-airport">
-          <strong>{{data.arr_time}}</strong>
+          <strong>{{ data.arr_time }}</strong>
           <span>浦东机场T2</span>
         </el-col>
       </el-row>
@@ -27,17 +32,19 @@
     </el-row>
     <el-row type="flex" justify="space-between" class="info-bar">
       <span>成人机票</span>
-      <span>￥{{data.seat_infos.org_settle_price}}</span>
+      <span v-if="data.seat_infos"
+        >￥{{ data.seat_infos.org_settle_price }}</span
+      >
       <span>x1</span>
     </el-row>
     <el-row type="flex" justify="space-between" class="info-bar">
       <span>机建＋燃油</span>
-      <span>¥{{data.airport_tax_audlet}}/人/单程</span>
+      <span>¥{{ data.airport_tax_audlet }}/人/单程</span>
       <span>x1</span>
     </el-row>
     <el-row type="flex" justify="space-between" align="middle" class="info-bar">
       <span>应付总额：</span>
-      <span class="price">￥</span>
+      <span class="price">￥{{ allPrice }}</span>
     </el-row>
   </div>
 </template>
@@ -48,9 +55,12 @@ export default {
     data: {
       type: Object,
       default: {}
+    },
+    allPrice: {
+      type: Number,
+      default: 0
     }
   },
-
   computed: {
     rankTime() {
       // 数据还未请求回来

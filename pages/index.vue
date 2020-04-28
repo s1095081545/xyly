@@ -82,8 +82,22 @@ export default {
         this.banners = data;
       });
     },
-    handleOption(index) {},
-    handleSearch() {}
+    handleOption(index) {
+      // 设置当前tab
+      this.currentOption = index;
+
+      // 如果切换的机票tab，那么直接跳转到机票首页
+      const item = this.options[index];
+      if (item.name === "机票") {
+        return this.$router.push(item.pageUrl);
+      }
+    },
+    // 搜索时候触发
+    handleSearch() {
+      const item = this.options[this.currentOption];
+      // 跳转时候给对应的页面url加上搜索内容参数
+      this.$router.push(item.pageUrl + this.searchValue);
+    }
   }
 };
 </script>

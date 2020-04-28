@@ -4,7 +4,8 @@
       <!-- logo -->
       <div class="logo">
         <nuxt-link to="/">
-          <img src="http://157.122.54.189:9093/images/logo.jpg" alt />
+          <!-- <img src="http://157.122.54.189:9093/images/logo.jpg" alt /> -->
+          <img src="/web_name.png" alt />
         </nuxt-link>
       </div>
 
@@ -43,9 +44,7 @@
         </el-dropdown>
 
         <!-- 不存在用户信息展示登录注册链接 -->
-        <nuxt-link to="/user/login" class="account-link" v-else
-          >登录 / 注册</nuxt-link
-        >
+        <nuxt-link to="/user/login" class="account-link" v-else>登录 / 注册</nuxt-link>
       </el-row>
     </el-row>
   </header>
@@ -57,7 +56,8 @@ export default {
     handleLogout() {
       // 清除userInfo字段的状态
       this.$store.commit("user/setUserInfo", {});
-      this.$message.success('退出成功')
+      this.$message.success("退出成功");
+      this.$router.replace("/user/login");
     }
   }
 };
