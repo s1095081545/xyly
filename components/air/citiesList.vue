@@ -101,7 +101,7 @@ export default {
   user-select: none;
   position: absolute;
   z-index: 10000;
-  width: 500px;
+  width: 470px;
   .label {
     font-size: 12px;
   }
