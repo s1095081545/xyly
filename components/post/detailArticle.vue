@@ -150,6 +150,7 @@ h1 {
 }
 
 /deep/img {
+  margin-top: 10px;
   object-fit: cover;
   max-width: 100%;
 }
