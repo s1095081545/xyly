@@ -141,9 +141,11 @@ export default {
       for (var i = 0; i < this.data.data.length; i++) {
         const { longitude, latitude } = this.data.data[i].location;
         console.log(longitude, latitude);
+        var content = `<i class="el-icon-place">${i}</i>`;
         var marker = new AMap.Marker({
           position: [longitude, latitude], //位置
-          index: 5
+          index: 5,
+          content
         });
 
         map.add(marker); //添加到地图
