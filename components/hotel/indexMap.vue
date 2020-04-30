@@ -6,21 +6,17 @@
         <el-row class="quyu">
           <el-col :span="3">区域 :</el-col>
           <el-col :span="21">
-            <span>人民广场</span>
-            <span>称啊</span>
-            <span>称啊</span>
-            <span>称啊</span>
-            <span>称啊</span>
-            <span>称啊</span>
-            <span>称啊</span>
-            <span>称啊</span>
-            <span>称啊</span>
-            <span>称啊</span>
-            <span>称啊</span>
-            <span>称啊</span>
-            <span>称啊</span>
-            <span>称啊</span>
-            <span>称其哦</span>
+            <div v-if="cities.scenics">
+              <span
+                v-for="(item, index) in cities.scenics"
+                :key="index"
+                v-if="index<count"
+              >{{item.name}}</span>
+              <div class="more" v-if="cities.scenics.length>=count" @click="handleClick">
+                <i class="el-icon-d-arrow-right" :class="count>16?'active':''"></i>
+                等{{cities.scenics.length}}个区域
+              </div>
+            </div>
           </el-col>
         </el-row>
         <!-- 均价 -->
@@ -61,7 +57,7 @@
                 <i class="iconfont icon-huiyuanhuangguanguanjun"></i>
                 <i class="iconfont icon-huiyuanhuangguanguanjun"></i>
                 <i class="iconfont icon-huiyuanhuangguanguanjun"></i>
-                <i>¥330</i>
+                <i>¥734</i>
               </span>
             </el-tooltip>
             <el-tooltip class="item" effect="dark" content="Bottom Center 提示文字" placement="bottom">
@@ -70,7 +66,7 @@
                 <i class="iconfont icon-huiyuanhuangguanguanjun"></i>
                 <i class="iconfont icon-huiyuanhuangguanguanjun"></i>
                 <i class="iconfont icon-huiyuanhuangguanguanjun"></i>
-                <i>¥330</i>
+                <i>¥537</i>
               </span>
             </el-tooltip>
           </el-col>
@@ -100,39 +96,68 @@ export default {
       }
     ]
   },
-  props: {
-    data: {
-      type: Object,
-      default: {}
-    }
+  props: ["data", "cities", "currentCity"],
+  data() {
+    return {
+      count: 16
+    };
   },
   watch: {
     data() {
+      if (this.data.total <= 0) return;
+      const { longitude, latitude } = this.data.data[0].location;
       var map = new AMap.Map("container", {
-        zoom: 11, //级别
-        center: this.data.coords, //中心点坐标
+        zoom: 15, //级别
+        center: [longitude, latitude], //中心点坐标
         viewMode: "3D" //使用3D视图
       });
 
-      var infoWindow = new AMap.InfoWindow({
-        //创建信息窗体
-        isCustom: false, //使用自定义窗体
-        // content: "<div>信息窗体</div>", //信息窗体的内容可以是任意html片段
-        offset: new AMap.Pixel(16, -45)
-      });
-      var onMarkerClick = function(e) {
-        infoWindow.open(map, e.target.getPosition()); //打开信息窗体
-        //e.target就是被点击的Marker
-      };
+      // var massMarks = new AMap.MassMarks();
 
-      var marker = new AMap.Marker({
-        position: this.data.coords //位置
-      });
-      map.add(marker); //添加到地图
-      marker.on("click", onMarkerClick); //绑定click事件
+      // var data = [
+      //   {
+      //     lnglat: [116.405285, 39.904989], //点标记位置
+      //     name: "beijing",
+      //     id: 1
+      //   }
+      // ];
+
+      // massMarks.setData(data);
+
+      // // // 将海量点添加至地图实例
+      // massMarks.setMap(map);
+
+      // var infoWindow = new AMap.InfoWindow({
+      //   //创建信息窗体
+      //   isCustom: false, //使用自定义窗体
+      //   content: "<div>信息窗体</div>", //信息窗体的内容可以是任意html片段
+      //   offset: new AMap.Pixel(16, -45)
+      // });
+      // var onMarkerClick = function(e) {
+      //   infoWindow.open(map, e.target.getPosition()); //打开信息窗体
+      //   //e.target就是被点击的Marker
+      // };
+
+      for (var i = 0; i < this.data.data.length; i++) {
+        const { longitude, latitude } = this.data.data[i].location;
+        console.log(longitude, latitude);
+        var marker = new AMap.Marker({
+          position: [longitude, latitude], //位置
+          index: 5
+        });
+
+        map.add(marker); //添加到地图
+      }
+      // marker.on("click", onMarkerClick); //绑定click事件
     }
   },
-  mounted() {}
+  mounted() {},
+  methods: {
+    // 点击更多
+    handleClick() {
+      this.count = this.count === 16 ? this.cities.scenics.length : 16;
+    }
+  }
 };
 </script>
 <style scoped lang="less">
@@ -147,7 +172,18 @@ export default {
       height: 100%;
     }
   }
-
+  .more {
+    cursor: pointer;
+    user-select: none;
+    line-height: 30px;
+    i {
+      color: orange;
+      transform: rotate(90deg);
+    }
+    .active {
+      transform: rotate(-90deg);
+    }
+  }
   .quyu {
     span {
       margin-right: 20px;
