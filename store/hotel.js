@@ -1,5 +1,4 @@
 export const state = () => {
-<<<<<<< HEAD
   return {
     location: {},
     name: ''
@@ -14,10 +13,7 @@ export const mutations = {
   },
 
 };
-=======
-  return {};
-};
-export const mutations = {};
+
 export const actions = {
   // 获取城市
   getCities(store, data) {
@@ -27,4 +23,3 @@ export const actions = {
     });
   }
 };
->>>>>>> 1b68e643843cfb044728eb86cdd5e9e4aa77f0b8
