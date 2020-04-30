@@ -3,15 +3,15 @@
     <el-breadcrumb separator-class="el-icon-arrow-right">
       <el-breadcrumb-item :to="{ path: '/hotel' }">酒店</el-breadcrumb-item>
       <el-breadcrumb-item :to="{ path: '/hotel' }">广州酒店</el-breadcrumb-item>
-      <el-breadcrumb-item>0578时尚主题酒店(曹杨店)</el-breadcrumb-item>
+      <el-breadcrumb-item>{{ hotelData[0].name }}</el-breadcrumb-item>
     </el-breadcrumb>
     <!-- 酒店名 -->
     <el-row class="name_info">
       <el-col :span="24">
         <el-row>
           <h4>
-            0578时尚主题酒店(曹杨店)
-            <span>
+            {{ hotelData[0].name }}
+            <span v-if="hotelData[0].hotellevel">
               <i class="iconfont icon-huiyuanhuangguanguanjun"></i>
               <i class="iconfont icon-huiyuanhuangguanguanjun"></i>
               <i class="iconfont icon-huiyuanhuangguanguanjun"></i>
@@ -21,13 +21,11 @@
           </h4>
         </el-row>
         <el-row>
-          <span class="hotel_name"
-            >0578 shi shang zhu ti hotel (cao yang dian)</span
-          >
+          <span class="hotel_name">{{ hotelData[0].alias }}</span>
         </el-row>
         <el-row class="hotel_address">
           <i class="iconfont icon-yiliaohangyedeICON-"></i>
-          兰溪路143号(曹杨商场隔壁)
+          {{ hotelData[0].address }}
         </el-row>
       </el-col>
     </el-row>
@@ -83,13 +81,27 @@
       </el-row>
     </el-row>
     <!-- 价格 -->
-    <el-table :data="priceData" style="width: 100%">
-      <el-table-column prop="source" label="价格来源" width="420">
-      </el-table-column>
-      <el-table-column prop="layout" label="低价房型" width="420">
-      </el-table-column>
-      <el-table-column prop="price" label="最低价格/每晚"> </el-table-column>
-    </el-table>
+    <a target="_blank" href="https://hotels.ctrip.com/hotel/694679.html">
+      <el-table :data="hotelData[0].products" style="width: 100%">
+        <el-table-column label="价格来源" width="420">
+          <template slot-scope="scope">
+            <span style="margin-left: 10px">{{ scope.row.name }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="低价房型" width="420">
+          <template slot-scope="scope">
+            <span style="margin-left: 10px">{{ scope.row.bestType }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="最低价格/每晚">
+          <template slot-scope="scope">
+            <span>{{ scope.row.price }}</span>
+            <i>起</i>
+            <span class="iconfont icon-youjiantou"></span>
+          </template>
+        </el-table-column>
+      </el-table>
+    </a>
     <!-- 地图 -->
     <el-row class="detailsMap"><DetailsMap /> </el-row>
     <!-- 酒店基本设施 -->
@@ -100,22 +112,35 @@
           <el-row>
             <el-col :span="6">入住时间: 14:00之后</el-col>
             <el-col :span="6">离店时间: 12:00之前</el-col>
-            <el-col :span="6">2004年开业 / 2007年装修</el-col>
-            <el-col :span="6">酒店规模: 216间客房</el-col>
+            <el-col :span="6"
+              >{{ hotelData[0].creation_time }} /
+              {{ hotelData[0].renovat_time }}</el-col
+            >
+            <el-col :span="6"
+              >酒店规模: {{ hotelData[0].roomCount }}间客房</el-col
+            >
           </el-row>
         </el-col>
       </el-row>
       <el-row class="assets-info">
         <el-col :span="4">主要设施</el-col>
-        <el-col :span="20"></el-col>
+        <el-col :span="20">
+          <span
+            v-for="(item, index) in hotelData[0].hotelassets"
+            :key="index"
+            class=" assets-info-item"
+          >
+            {{ item.name }}
+          </span>
+        </el-col>
       </el-row>
       <el-row class="assets-info">
         <el-col :span="4">停车服务</el-col>
-        <el-col :span="20">门口免费停车;免费停车;有免费停车</el-col>
+        <el-col :span="20">{{ hotelData[0].parking }}</el-col>
       </el-row>
       <el-row class="assets-info">
         <el-col :span="4">品牌信息</el-col>
-        <el-col :span="20">如家</el-col>
+        <el-col :span="20">{{ hotelData[0].hotelbrand }}</el-col>
       </el-row>
     </el-row>
     <!-- 评论 -->
@@ -123,30 +148,38 @@
       <h4>0条真实用户评论</h4>
       <el-row type="flex" justify="space-between">
         <el-col :span="4">
-          <p>总评数：118</p>
-          <p>好评数：54</p>
-          <p>差评数：5</p>
+          <p>总评数：{{ hotelData[0].all_remarks }}</p>
+          <p>好评数：{{ hotelData[0].good_remarks }}</p>
+          <p>差评数：{{ hotelData[0].bad_remarks }}</p>
         </el-col>
         <el-col :span="5" class="recomment-score">
-          <div class="satrt">
-            <i class="iconfont icon-start"></i>
-            <i class="iconfont icon-start"></i>
-            <i class="iconfont icon-start"></i>
-            <i class="iconfont icon-start"></i>
-            <i class="iconfont icon-start"></i>
-            <span>4分</span>
-          </div>
-          <div class="stamp">
+          <el-rate
+            v-model="hotelData[0].stars"
+            disabled
+            show-score
+            text-color="#ff9900"
+            score-template="{value}"
+            class="satrt"
+          >
+          </el-rate>
+          <div class="stamp" v-if="hotelData[0].stars > 2">
             推荐
+          </div>
+          <div class="stamp" v-else>
+            一般
           </div>
         </el-col>
         <el-col :span="3">
           <div class="rate-box">
-            <el-progress type="circle" :percentage="70" status="warning">
+            <el-progress
+              type="circle"
+              :percentage="percentage"
+              :color="customColor"
+            >
             </el-progress>
             <span class="text">
               <span>环境</span>
-              <span>7.5</span>
+              <span>{{ hotelData[0].scores.environment }}</span>
             </span>
           </div>
         </el-col>
@@ -154,12 +187,12 @@
           <div class="rate-box">
             <el-progress
               type="circle"
-              :percentage="70"
-              status="warning"
+              :percentage="percentage"
+              :color="customColor"
             ></el-progress>
             <span class="text">
               <span>产品</span>
-              <span>7.6</span>
+              <span>{{ hotelData[0].scores.product }}</span>
             </span>
           </div>
         </el-col>
@@ -167,12 +200,12 @@
           <div class="rate-box">
             <el-progress
               type="circle"
-              :percentage="70"
-              status="warning"
+              :percentage="percentage"
+              :color="customColor"
             ></el-progress>
             <span class="text">
               <span>服务</span>
-              <span>7.7</span>
+              <span>{{ hotelData[0].scores.service }}</span>
             </span>
           </div>
         </el-col>
@@ -186,11 +219,9 @@ import DetailsMap from "@/components/hotel/details_map";
 export default {
   data() {
     return {
-      priceData: [
-        { source: "携程", layout: "高级大床房A", price: "¥141起" },
-        { source: "艺龙", layout: "高级大床房A", price: "¥141起" },
-        { source: "Hotels.com", layout: "高级大床房A", price: "¥141起" }
-      ]
+      hotelData: [{ scores: {} }],
+      percentage: 74,
+      customColor: "#ff9900"
     };
   },
   head: {
@@ -203,6 +234,18 @@ export default {
   },
   components: {
     DetailsMap
+  },
+  mounted() {
+    this.$axios({
+      url: "/hotels",
+      params: {
+        id: 255
+      }
+    }).then(res => {
+      console.log(res);
+      this.hotelData = res.data.data;
+      this.percentage = this.hotelData[0].scores.service * 10;
+    });
   }
 };
 </script>
@@ -219,9 +262,20 @@ export default {
     color: #666;
     margin-bottom: 20px;
     h4 {
+      display: flex;
       font-size: 25px;
       font-weight: normal;
       color: #444;
+      span {
+        width: 100px;
+        height: 32px;
+        font-size: 0;
+        text-align: center;
+        line-height: 39px;
+        i {
+          font-size: 16px;
+        }
+      }
     }
   }
   .icon-huiyuanhuangguanguanjun {
@@ -245,6 +299,18 @@ export default {
       }
     }
   }
+  /deep/ .el-table__row {
+    cursor: pointer;
+    .el-table_1_column_3 {
+      text-align: center;
+      line-height: 24px;
+      span {
+        color: #ff9900;
+        font-size: 18px;
+        line-height: 26px;
+      }
+    }
+  }
   .detailsMap {
     margin: 40px 0;
   }
@@ -254,7 +320,16 @@ export default {
     line-height: 60px;
     font-size: 14px;
     color: #666;
+    .assets-info-item {
+      border: 1px solid #eee;
+      padding: 4px 10px;
+      margin-right: 10px;
+      border-radius: 4px;
+      background-color: #eee;
+      color: #666;
+    }
   }
+  //评论
   .comment-list {
     padding: 20px 0;
     h4 {
@@ -264,11 +339,11 @@ export default {
     .recomment-score {
       position: relative;
       .stamp {
-        border: 2px solid #e6a23c;
+        border: 2px solid #ff9900;
         text-align: center;
         line-height: 70px;
         font-size: 25px;
-        color: #e6a23c;
+        color: #ff9900;
         width: 70px;
         height: 70px;
         border-radius: 50%;
@@ -279,10 +354,6 @@ export default {
         position: absolute;
         left: -15px;
         top: 20px;
-        color: #e6a23c;
-        :nth-child(5) {
-          color: #eee;
-        }
       }
     }
 
@@ -293,13 +364,14 @@ export default {
     .rate-box {
       position: relative;
     }
+    //进度条内部样式
     .text {
       position: absolute;
       top: 15px;
       left: 16px;
       width: 36px;
       height: 36px;
-      color: #e6a23c;
+      color: #ff9900;
       background-color: #fff;
       text-align: center;
     }
