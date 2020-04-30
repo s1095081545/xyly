@@ -95,9 +95,19 @@
         </el-table-column>
         <el-table-column label="最低价格/每晚">
           <template slot-scope="scope">
-            <span>{{ scope.row.price }}</span>
+            <span
+              style=" color: #ff9900;
+                      font-size: 18px;
+                      line-height: 26px;"
+              >{{ scope.row.price }}</span
+            >
             <i>起</i>
-            <span class="iconfont icon-youjiantou"></span>
+            <span
+              class="iconfont icon-youjiantou"
+              style=" color: #ff9900;
+                      font-size: 18px;
+                      line-height: 26px;"
+            ></span>
           </template>
         </el-table-column>
       </el-table>
@@ -308,11 +318,11 @@ export default {
     .el-table_1_column_3 {
       text-align: center;
       line-height: 24px;
-      span {
-        color: #ff9900;
-        font-size: 18px;
-        line-height: 26px;
-      }
+      // span {
+      //   color: #ff9900;
+      //   font-size: 18px;
+      //   line-height: 26px;
+      // }
     }
   }
   .detailsMap {
