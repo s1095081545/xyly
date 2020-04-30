@@ -228,7 +228,7 @@ export default {
     link: [
       {
         rel: "stylesheet",
-        href: "//at.alicdn.com/t/font_1790148_7n0vjxq25yq.css"
+        href: "//at.alicdn.com/t/font_1790148_s2ohpfp3nec.css"
       }
     ]
   },
@@ -245,6 +245,10 @@ export default {
       console.log(res);
       this.hotelData = res.data.data;
       this.percentage = this.hotelData[0].scores.service * 10;
+      const { location } = this.hotelData[0];
+      const { name } = this.hotelData[0];
+      this.$store.commit("hotel/setLocation", location);
+      this.$store.commit("hotel/setName", name);
     });
   }
 };
