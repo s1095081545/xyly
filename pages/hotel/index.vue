@@ -10,11 +10,11 @@
       <!-- 表单 -->
       <IndexForm />
       <!-- 地图 -->
-      <IndexMap :data="currentCity" />
+      <IndexMap :data="list" :cities="cities" :currentCity="currentCity"/>
       <!-- 筛选过滤 -->
       <IndexFilter />
       <!-- 列表展示 -->
-      <IndexList v-for="(item, index) in 4" :key="index" />
+      <IndexList v-for="(item, index) in list.data" :key="index" :data="item" />
       <!-- 分页 -->
       <div class="page">
         <el-pagination
@@ -43,13 +43,35 @@ export default {
     return {
       pageSize: 5,
       pageIndex: 1,
-      currentCity: {} //当前城市
+      currentCity: {}, //当前城市
+      list: {}, //存储返回的数据
+      cities: [] //城市的数据
     };
   },
   watch: {
     currentCity() {
       // 提示信息
-      this.$message.success(`您当前城市是 : ${this.currentCity.address}`);
+      // this.$message.success(
+      //   `您当前城市是 : ${this.currentCity.address_detail["city"]}`
+      // );
+    },
+    async $route() {
+      const { cityName, ...data } = this.$route.query;
+      if (cityName.trim() == "") return;
+      const res = await this.$store.dispatch("hotel/getCities", cityName);
+      if (res.total > 0) {
+        this.cities = res.data[0];
+        data.city = res.data[0].id;
+        data._start = 1;
+        data._limit = 5;
+        console.log(data);
+
+        // 获取酒店
+        this.getHotels(data).then(res => {
+          this.list = res;
+          console.log(res);
+        });
+      }
     }
   },
   mounted() {
@@ -62,11 +84,29 @@ export default {
         val = val.content;
         this.currentCity = val;
         this.currentCity.coords = [val.point.x, val.point.y];
-        console.log(this.currentCity);
+        this.$router.push({
+          query: {
+            cityName: this.currentCity.address_detail["city"]
+          }
+        });
       };
       const el = document.createElement("script");
       el.src = `http://api.map.baidu.com/location/ip?ak=fb6FEkhIPYHYtO8mRqqczmosHNkhmwuY&coor=gcj02&callback=getCity`;
       document.querySelector(".main").appendChild(el);
+    },
+    // 获取城市
+    getCitys(data) {
+      return this.$axios({ url: `/cities?name=${data}` }).then(res => {
+        const { data } = res;
+        return data;
+      });
+    },
+    // 获取酒店
+    getHotels(data) {
+      return this.$axios({ url: `/hotels`, params: data }).then(res => {
+        const { data } = res;
+        return data;
+      });
     },
     // 分页大小改变
     handleSizeChange(val) {
