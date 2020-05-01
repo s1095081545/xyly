@@ -1,7 +1,8 @@
 export const state = () => {
   return {
     location: {},
-    name: ''
+    name: "",
+    cities: ''
   };
 };
 export const mutations = {
@@ -11,7 +12,9 @@ export const mutations = {
   setName(state, data) {
     state.name = data;
   },
-
+  setCities(state, data) {
+    state.cities = data;
+  }
 };
 
 export const actions = {

@@ -4,10 +4,14 @@
       <el-col :span="19">
         <el-row>
           <el-col :span="10">
-            <img :src="data.photos" alt />
+            <nuxt-link :to="`/hotel/${data.id}.html`">
+              <img :src="data.photos" alt />
+            </nuxt-link>
           </el-col>
           <el-col :span="14" class="center">
-            <h2>{{data.name}}</h2>
+            <nuxt-link :to="`/hotel/${data.id}.html`">
+              <h2>{{data.name}}</h2>
+            </nuxt-link>
             <p>{{data.alias}}</p>
             <div class="pingfen">
               <!-- 评分 -->
@@ -35,11 +39,13 @@
       <!-- 右 -->
       <el-col :span="5" class="right">
         <div class="r_row" v-for="(item, index) in data.products" :key="index">
-          <span>{{item.name}}</span>
-          <span>
-            <span class="price">￥{{item.price}}</span>起
-            <i class="el-icon-arrow-right"></i>
-          </span>
+          <a href="https://hotels.ctrip.com/hotel/694679.html" target="_banlk">
+            <span>{{item.name}}</span>
+            <span>
+              <span class="price">￥{{item.price}}</span>起
+              <i class="el-icon-arrow-right"></i>
+            </span>
+          </a>
         </div>
       </el-col>
     </el-row>
@@ -95,6 +101,11 @@ export default {
   }
   .right {
     padding-top: 20px;
+    a {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+    }
     .r_row {
       padding: 0 20px 0 10px;
       color: #333;

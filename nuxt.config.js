@@ -34,10 +34,14 @@ export default {
   /*
    ** Plugins to load before mounting the App
    */
+  script: [
+    { src: "https://hm.baidu.com/hm.js?3a311123b2a6fb77f7d9d9a66e220f2c" }
+  ],
   plugins: [
     "@/plugins/element-ui",
     { src: "@/plugins/localStorage.js", ssr: false },
-    "@/plugins/axios.js"
+    "@/plugins/axios.js",
+    "@/plugins/site.js"
   ],
   /*
    ** Nuxt.js dev-modules

@@ -2,12 +2,29 @@
   <div>
     <el-form :model="form" ref="form" :inline="true" class="demo-form-inline">
       <el-form-item>
-        <el-autocomplete
-          :fetch-suggestions="querySearchAsync"
-          placeholder="切换城市"
-          @select="handleSelect"
-          v-model="form.name"
-        ></el-autocomplete>
+        <!-- <el-popover placement="bottom-start" v-model="cityVisible"  trigger="focus"> -->
+          <el-autocomplete
+            :fetch-suggestions="querySearchAsync"
+            @click="handleCity"
+            placeholder="切换城市"
+            @select="handleSelect"
+            v-model="form.name"
+          ></el-autocomplete>
+          <!-- 弹出层 -->
+          <!-- <div class="hotCity" v-if="false">
+            <p>热门城市</p>
+            <ul>
+              <li @click="hotCityClick('广州市')">广州市</li>
+              <li @click="hotCityClick('杭州市')">杭州市</li>
+              <li @click="hotCityClick('上海市')">上海市</li>
+            </ul>
+          </div> -->
+          <!-- <p>这是一段内容这是一段内容确定删除吗？</p>
+          <div style="text-align: right; margin: 0">
+            <el-button size="mini" type="text" @click="cityVisible = false">取消</el-button>
+            <el-button type="primary" size="mini" @click="cityVisible = false">确定</el-button>
+          </div>-->
+        <!-- </el-popover> -->
         <!-- 所有城市列表 -->
         <transition name="el-zoom-in-top">
           <!-- <citiesList
@@ -78,7 +95,7 @@
         </el-popover>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="onSubmit">查看价格</el-button>
+        <el-button type="primary" @click="onSubmit">搜索酒店</el-button>
       </el-form-item>
     </el-form>
   </div>
@@ -96,7 +113,7 @@ export default {
         }
       },
       form: {
-        name: "广州市",
+        name: "",
         date: "",
         person: ""
       },
@@ -105,11 +122,30 @@ export default {
         children: "0儿童"
       },
       isShowDepartCity: true, //是否显示出发输入框所有城市
-      visible: false //人数确定弹出层
+      visible: false, //人数确定弹出层
+      cityVisible: false
     };
   },
-  watch: {},
+  watch: {
+    $route() {
+      this.setForm();
+    }
+  },
+  mounted() {
+    this.setForm();
+  },
   methods: {
+    // 热门城市点击事件
+    hotCityClick(val) {
+      this.form.name = val;
+      this.cityVisible = false;
+    },
+    //设置输入框
+    setForm() {
+      const { cityName, enterTime, leftTime } = this.$route.query;
+      this.form.name = cityName;
+      this.form.date = [enterTime || "", leftTime || ""];
+    },
     // 点击每个城市，返回值到输入框中
     handleClickCity(val) {
       const { addr, city } = val;
@@ -124,6 +160,7 @@ export default {
       val = val.trim();
       cb([]);
       if (val.length) {
+        this.cityVisible = false;
         this.$store.dispatch("hotel/getCities", val).then(res => {
           if (res.total > 0) {
             const data = res.data.map(item => ({
@@ -133,11 +170,20 @@ export default {
           }
         });
       } else {
+        this.cityVisible = true;
+      }
+    },
+    // 点击切换城市
+    handleCity() {
+      if (this.form.name) {
+        this.cityVisible = false;
+      } else {
+        this.cityVisible = true;
       }
     },
     // 切换城市下拉选择
     handleSelect(item) {
-      console.log(item);
+      // console.log(item);
     },
     // 点击人数下拉框
     handleDown() {
@@ -148,12 +194,22 @@ export default {
     // 提交表单
     onSubmit() {
       const { name, date } = this.form;
+      this.$store.commit("hotel/setCities", name);
+      const query = {
+        ...this.$route.query,
+        _start: 1,
+        cityName: name
+      };
+      if (date) {
+        query.enterTime = date[0];
+        query.leftTime = date[1];
+      } else {
+        query.enterTime = "";
+        query.leftTime = "";
+      }
       this.$router.push({
-        query: {
-          cityName: name,
-          enterTime: date[0],
-          leftTime: date[1]
-        }
+        path: "/hotel",
+        query
       });
     }
   }
@@ -161,6 +217,26 @@ export default {
 </script>
 
 <style scoped lang="less">
+.hotCity {
+  position: relative;
+  z-index: 99999;
+  overflow: hidden;
+  width: 260px;
+  p {
+    margin-bottom: 20px;
+    font-size: 16px;
+    border-bottom: 1px solid #eaeaea;
+    line-height: 30px;
+  }
+  ul {
+    display: flex;
+    flex-wrap: wrap;
+    li {
+      flex: 0 0 20%;
+      cursor: pointer;
+    }
+  }
+}
 .down {
   line-height: 0;
   width: 320px;

@@ -75,14 +75,9 @@
       <!-- 右边地图 -->
       <el-col :span="10" class="right">
         <!-- 地图占位 -->
-        <div id="container"></div>
+        <div id="container" v-loading="loading"></div>
       </el-col>
     </el-row>
-    <!-- 加载js -->
-    <script
-      type="text/javascript"
-      src="https://webapi.amap.com/maps?v=1.4.15&key=3d2be9a4ac558e1562c47247fbee8288"
-    ></script>
   </div>
 </template>
 
@@ -93,68 +88,110 @@ export default {
       {
         rel: "stylesheet",
         href: "//at.alicdn.com/t/font_1790048_0ezymh84xpag.css"
+      },
+      {
+        rel: "stylesheet",
+        href: "/marker.css"
+      }
+    ],
+    script: [
+      {
+        type: "text/javascript",
+        src:
+          "https://webapi.amap.com/maps?v=1.4.15&key=fa7b62b9be8af90396854c55cc8402e0&plugin=AMap.Geocoder"
       }
     ]
   },
   props: ["data", "cities", "currentCity"],
   data() {
     return {
-      count: 16
+      count: 16,
+      loading: true,
+      loaded: false
     };
   },
   watch: {
     data() {
-      if (this.data.total <= 0) return;
-      const { longitude, latitude } = this.data.data[0].location;
+      setTimeout(() => {
+        this.setMap();
+      }, 100);
+    }
+  },
+  mounted() {
+    setTimeout(() => {
+      this.setMap();
+    }, 100);
+  },
+  methods: {
+    setMap() {
+      // 定义标记
+      const div = document.createElement("div");
+      const pin = document.createElement("div");
+      const pulse = document.createElement("div");
+      pin.classList.add("pin");
+      pulse.classList.add("pulse");
+      div.appendChild(pin);
+      div.appendChild(pulse);
+
+      if (this.data.total < 1 || !this.data.data || !this.data.data[0]) {
+        // 如果没有数据
+        const { cityName } = this.$route.query;
+        if (!cityName) return;
+        var map = new AMap.Map("container", {
+          zoom: 11, //级别
+          autoFitView: true
+        });
+        var geocoder = new AMap.Geocoder({
+          city: cityName
+        });
+
+        var marker = new AMap.Marker({
+          title: cityName,
+          content: div.innerHTML
+        });
+
+        function geoCode() {
+          geocoder.getLocation(cityName, function(status, result) {
+            if (status === "complete" && result.geocodes.length) {
+              var lnglat = result.geocodes[0].location;
+              marker.setPosition(lnglat);
+              map.add(marker);
+              map.setFitView(marker);
+            }
+          });
+        }
+        geoCode();
+        this.loading = false;
+
+        return;
+      }
+      if (this.data.data && this.data.data[0]) {
+        var { longitude, latitude } = this.data.data[0].location;
+      } else {
+        return;
+      }
       var map = new AMap.Map("container", {
-        zoom: 15, //级别
+        zoom: 11, //级别
         center: [longitude, latitude], //中心点坐标
-        viewMode: "3D" //使用3D视图
+        // viewMode: "3D" //使用3D视图
+        autoFitView: true // 是否自动调整地图视野使绘制的 Marker点都处于视口的可见范围
       });
-
-      // var massMarks = new AMap.MassMarks();
-
-      // var data = [
-      //   {
-      //     lnglat: [116.405285, 39.904989], //点标记位置
-      //     name: "beijing",
-      //     id: 1
-      //   }
-      // ];
-
-      // massMarks.setData(data);
-
-      // // // 将海量点添加至地图实例
-      // massMarks.setMap(map);
-
-      // var infoWindow = new AMap.InfoWindow({
-      //   //创建信息窗体
-      //   isCustom: false, //使用自定义窗体
-      //   content: "<div>信息窗体</div>", //信息窗体的内容可以是任意html片段
-      //   offset: new AMap.Pixel(16, -45)
-      // });
-      // var onMarkerClick = function(e) {
-      //   infoWindow.open(map, e.target.getPosition()); //打开信息窗体
-      //   //e.target就是被点击的Marker
-      // };
 
       for (var i = 0; i < this.data.data.length; i++) {
         const { longitude, latitude } = this.data.data[i].location;
-        console.log(longitude, latitude);
-        var content = `<i class="el-icon-place">${i}</i>`;
+        var content = `1`;
+        const r = +`0.0${Math.floor(Math.random() * 20)}`;
         var marker = new AMap.Marker({
-          position: [longitude, latitude], //位置
-          index: 5,
-          content
+          position: [longitude + r, latitude + r], //位置
+          offset: new AMap.Pixel(r, r),
+          title: this.data.data[i].name,
+          content: div.innerHTML
         });
 
         map.add(marker); //添加到地图
+        this.loading = false;
       }
-      // marker.on("click", onMarkerClick); //绑定click事件
-    }
-  },
-  mounted() {},
-  methods: {
+    },
     // 点击更多
     handleClick() {
       this.count = this.count === 16 ? this.cities.scenics.length : 16;
@@ -163,15 +200,25 @@ export default {
 };
 </script>
 <style scoped lang="less">
+/deep/.pin {
+  background: #ff7300;
+  &:after {
+    background: #ff0000;
+  }
+}
+/deep/.pulse:after {
+  box-shadow: 0 0 1px 2px #f9849b;
+}
 .layout {
   height: 260px;
   font-size: 14px;
   .right {
-    background: #ccc;
+    background: #fff;
     height: 100%;
     #container {
       width: 100%;
       height: 100%;
+      background: #fff;
     }
   }
   .more {

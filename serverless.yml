@@ -1,0 +1,18 @@
+# serverless.yml
+NuxtjsFunc:
+  component: "@serverless/tencent-nuxtjs"
+  inputs:
+    functionName: nuxtjs-function
+    region: ap-guangzhou
+    code: ./
+    functionConf:
+      timeout: 30
+      memorySize: 128
+    environment:
+      variables:
+        RUN_ENV: test
+    apigatewayConf:
+      protocols:
+        - http
+        - https
+      environment: release

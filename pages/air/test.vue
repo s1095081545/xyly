@@ -1,59 +1,40 @@
 <template>
-  <div>
-    <ul class="menu">
-      <li v-for="(index) in 4" :key="index" :class="index===3?'active':''">
-        <div>
-          热门城市
-          <i class="el-icon-arrow-right"></i>
-        </div>
-        <ol>
-          <li>
-            <span>1</span>
-            <span>北京</span>
-            <span>世界著名的文化只读顶顶顶{{index}}</span>
-          </li>
-          <li>
-            <span>1</span>
-            <span>北京</span>
-            <span>世界著名的文化只读顶顶顶 {{index}}</span>
-          </li>
-          <li>
-            <span>1</span>
-            <span>北京</span>
-            <span>世界著名的文化只读顶顶顶</span>
-          </li>
-          <li>
-            <span>1</span>
-            <span>北京</span>
-            <span>世界著名的文化只读顶顶顶</span>
-          </li>
-        </ol>
-      </li>
-    </ul>
-  </div>
+  <el-table v-loading="loading" :data="tableData">
+    <el-table-column prop="date" label="日期" width="180"></el-table-column>
+    <el-table-column prop="name" label="姓名" width="180"></el-table-column>
+    <el-table-column prop="address" label="地址"></el-table-column>
+  </el-table>
 </template>
 
-<script>
-export default {};
-</script>
-
-<style scoped lang="less">
-.menu {
-  position: relative;
-  width: 200px;
-
-  ol {
-    display: none;
-    position: absolute;
-    left: 100%;
-    top: 0;
-    width: 300px;
-  }
-  >li{
-    line-height: 40px;
-  }
-  > li:hover ol {
-    display: block;
-  }
+<style>
+body {
+  margin: 0;
 }
 </style>
+
+<script>
+export default {
+  data() {
+    return {
+      tableData: [
+        {
+          date: "2016-05-03",
+          name: "王小虎",
+          address: "上海市普陀区金沙江路 1518 弄"
+        },
+        {
+          date: "2016-05-02",
+          name: "王小虎",
+          address: "上海市普陀区金沙江路 1518 弄"
+        },
+        {
+          date: "2016-05-04",
+          name: "王小虎",
+          address: "上海市普陀区金沙江路 1518 弄"
+        }
+      ],
+      loading: true
+    };
+  }
+};
+</script>
