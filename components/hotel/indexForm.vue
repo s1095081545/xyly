@@ -208,7 +208,7 @@ export default {
         query.leftTime = "";
       }
       this.$router.push({
-        path: "/hotel",
+        path: "hotel",
         query
       });
     }

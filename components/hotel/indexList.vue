@@ -4,12 +4,12 @@
       <el-col :span="19">
         <el-row>
           <el-col :span="10">
-            <nuxt-link :to="`/hotel/${data.id}.html`">
+            <nuxt-link :to="`/hotel/details?id=${data.id}`">
               <img :src="data.photos" alt />
             </nuxt-link>
           </el-col>
           <el-col :span="14" class="center">
-            <nuxt-link :to="`/hotel/${data.id}.html`">
+            <nuxt-link :to="`/hotel/details?id=${data.id}`">
               <h2>{{data.name}}</h2>
             </nuxt-link>
             <p>{{data.alias}}</p>

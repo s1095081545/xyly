@@ -129,7 +129,7 @@ export default {
     form: {
       handler() {
         this.$router.push({
-          path: "/hotel",
+          path: "hotel",
           query: {
             ...this.$route.query,
             ...this.form,

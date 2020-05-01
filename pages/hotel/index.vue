@@ -4,7 +4,9 @@
       <!-- 面包屑导航 -->
       <el-breadcrumb separator-class="el-icon-arrow-right" class="submenu">
         <el-breadcrumb-item>酒店</el-breadcrumb-item>
-        <el-breadcrumb-item>{{$route.query.cityName}}酒店预订</el-breadcrumb-item>
+        <el-breadcrumb-item
+          >{{ $route.query.cityName }}酒店预订</el-breadcrumb-item
+        >
       </el-breadcrumb>
 
       <!-- 表单 -->
@@ -12,9 +14,14 @@
       <!-- 地图 -->
       <IndexMap :data="list" :cities="cities" :currentCity="currentCity" />
       <!-- 筛选过滤 -->
-        <IndexFilter />
+      <IndexFilter />
       <!-- 列表展示 -->
-      <IndexList v-for="(item, index) in list.data" :key="index" :data="item" v-if="list.data" />
+      <IndexList
+        v-for="(item, index) in list.data"
+        :key="index"
+        :data="item"
+        v-if="list.data"
+      />
       <!-- 分页 -->
       <div class="page" v-if="list.total">
         <el-pagination
@@ -72,26 +79,31 @@ export default {
   },
   mounted() {
     this.reset();
+    this.$axios({ url: `/hotels?id=185` }).then(res => {
+      const { data } = res;
+      console.log(data);
+    });
   },
   methods: {
     reset() {
       // 获取当前城市
       // 如果是从酒店详情页返回的则不重新获取当前位置
-      const cities = this.$store.state.hotel.cities;
       setTimeout(() => {
-        if (!this.isRouter) {
-          this.upData();
-          return;
-        }
+        const cities = this.$store.state.hotel.cities;
+        // if (!this.isRouter) {
+        //   this.upData();
+        //   return;
+        // }
         if (cities) {
           this.$router.push({
-            path:'/hotel',
+            path: "hotel",
             query: {
               cityName: cities,
               _start: 1,
               _limit: 10
             }
           });
+          this.upData();
           return;
         }
         // console.log(cities);
@@ -102,7 +114,7 @@ export default {
           // this.currentCity = val;
           // this.currentCity.coords = [val.point.x, val.point.y];
           this.$router.push({
-            path:'/hotel',
+            path: "hotel",
             query: {
               cityName: city,
               _start: 1,
@@ -113,7 +125,7 @@ export default {
         const el = document.createElement("script");
         el.src = `http://api.map.baidu.com/location/ip?ak=fb6FEkhIPYHYtO8mRqqczmosHNkhmwuY&coor=gcj02&callback=getCity`;
         document.querySelector(".main").appendChild(el);
-      }, 100);
+      }, 200);
     },
     // 更新页面数据
     async upData() {
@@ -159,7 +171,7 @@ export default {
     handleSizeChange(val) {
       const query = this.$route.query;
       this.$router.push({
-        path:'/hotel',
+        path: "hotel",
         query: {
           ...query,
           _limit: val
@@ -170,7 +182,7 @@ export default {
     handleCurrentChange(val) {
       const query = this.$route.query;
       this.$router.push({
-        path:'/hotel',
+        path: "hotel",
         query: {
           ...query,
           _start: (val - 1) * query._limit + 1
