@@ -1,5 +1,6 @@
 <template>
   <section class="contianer">
+    <!-- 导航栏 -->
     <el-breadcrumb separator-class="el-icon-arrow-right">
       <el-breadcrumb-item :to="{ path: '/hotel' }">酒店</el-breadcrumb-item>
       <el-breadcrumb-item :to="{ path: '/hotel' }">广州酒店</el-breadcrumb-item>
@@ -32,49 +33,16 @@
     <!-- 图片 -->
     <el-row class="pic-info">
       <el-row>
+        <!-- 大图 -->
         <el-col :span="16" class="main-pic">
-          <img
-            src="http://157.122.54.189:9093/images/hotel-pics/1.jpeg"
-            alt=""
-          />
+          <img :src="bigImg" alt="" />
         </el-col>
+        <!-- 小图 -->
         <el-col :span="8" class="list-pics">
           <el-row>
-            <el-col :span="12"
+            <el-col :span="12" v-for="(item, index) in imageData" :key="index"
               ><a href="#"
-                ><img
-                  src="http://157.122.54.189:9093/images/hotel-pics/1.jpeg"
-                  alt=""/></a
-            ></el-col>
-            <el-col :span="12"
-              ><a href="#"
-                ><img
-                  src="http://157.122.54.189:9093/images/hotel-pics/3.jpeg"
-                  alt=""/></a
-            ></el-col>
-            <el-col :span="12"
-              ><a href="#"
-                ><img
-                  src="http://157.122.54.189:9093/images/hotel-pics/5.jpeg"
-                  alt=""/></a
-            ></el-col>
-            <el-col :span="12"
-              ><a href="#"
-                ><img
-                  src="http://157.122.54.189:9093/images/hotel-pics/2.jpeg"
-                  alt=""/></a
-            ></el-col>
-            <el-col :span="12"
-              ><a href="#"
-                ><img
-                  src="http://157.122.54.189:9093/images/hotel-pics/4.jpeg"
-                  alt=""/></a
-            ></el-col>
-            <el-col :span="12"
-              ><a href="#"
-                ><img
-                  src="http://157.122.54.189:9093/images/hotel-pics/6.jpeg"
-                  alt=""/></a
+                ><img :src="item" alt="" @click="handleswitch(index)"/></a
             ></el-col>
           </el-row>
         </el-col>
@@ -231,7 +199,16 @@ export default {
     return {
       hotelData: [{ scores: {} }],
       percentage: 74,
-      customColor: "#ff9900"
+      customColor: "#ff9900",
+      bigImg: "http://157.122.54.189:9093/images/hotel-pics/1.jpeg",
+      imageData: [
+        "http://157.122.54.189:9093/images/hotel-pics/1.jpeg",
+        "http://157.122.54.189:9093/images/hotel-pics/3.jpeg",
+        "http://157.122.54.189:9093/images/hotel-pics/5.jpeg",
+        "http://157.122.54.189:9093/images/hotel-pics/2.jpeg",
+        "http://157.122.54.189:9093/images/hotel-pics/4.jpeg",
+        "http://157.122.54.189:9093/images/hotel-pics/6.jpeg"
+      ]
     };
   },
   head: {
@@ -246,10 +223,12 @@ export default {
     DetailsMap
   },
   mounted() {
+    const { id } = this.$route.query;
+    // console.log(this.$route);
     this.$axios({
       url: "/hotels",
       params: {
-        id: 255
+        id: id
       }
     }).then(res => {
       console.log(res);
@@ -260,6 +239,12 @@ export default {
       this.$store.commit("hotel/setLocation", location);
       this.$store.commit("hotel/setName", name);
     });
+  },
+  methods: {
+    handleswitch(index) {
+      // console.log(index);
+      this.bigImg = this.imageData[index];
+    }
   }
 };
 </script>
