@@ -15,14 +15,20 @@
       <el-col :span="18">
         <el-row class="other">
           <el-col :span="6" v-for="(a, b) in items" :key="b">
-            <div>{{a}}</div>
+            <div>{{ a }}</div>
             <div>
               <el-dropdown placement="bottom-start" :hide-on-click="false">
                 <span class="el-dropdown-link">
-                  {{form[Object.keys(form)[b]].length>0?form[Object.keys(form)[b]].length>1?`已选${form[Object.keys(form)[b]].length}项`:list[Object.keys(list)[b]].filter(v=>v.id===form[Object.keys(form)[b]][0])[0]['name']:'不限'}}
-                  <i
-                    class="el-icon-arrow-down el-icon--right"
-                  ></i>
+                  {{
+                    form[Object.keys(form)[b]].length > 0
+                      ? form[Object.keys(form)[b]].length > 1
+                        ? `已选${form[Object.keys(form)[b]].length}项`
+                        : list[Object.keys(list)[b]].filter(
+                            v => v.id === form[Object.keys(form)[b]][0]
+                          )[0]["name"]
+                      : "不限"
+                  }}
+                  <i class="el-icon-arrow-down el-icon--right"></i>
                 </span>
                 <el-dropdown-menu
                   slot="dropdown"
@@ -33,7 +39,9 @@
                       v-for="(item, index) in list[Object.keys(list)[b]]"
                       :key="index"
                     >
-                      <el-checkbox :label="item.id" style="display:block">{{item.name}}</el-checkbox>
+                      <el-checkbox :label="item.id" style="display:block">{{
+                        item.name
+                      }}</el-checkbox>
                     </el-dropdown-item>
                   </el-checkbox-group>
                 </el-dropdown-menu>
@@ -121,7 +129,7 @@ export default {
     form: {
       handler() {
         this.$router.push({
-          path:'/hotel',
+          path: "/hotel",
           query: {
             ...this.$route.query,
             ...this.form,
