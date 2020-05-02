@@ -2,38 +2,26 @@
   <div>
     <el-form :model="form" ref="form" :inline="true" class="demo-form-inline">
       <el-form-item>
-        <!-- <el-popover placement="bottom-start" v-model="cityVisible"  trigger="focus"> -->
-          <el-autocomplete
-            :fetch-suggestions="querySearchAsync"
-            @click="handleCity"
-            placeholder="切换城市"
-            @select="handleSelect"
-            v-model="form.name"
-          ></el-autocomplete>
-          <!-- 弹出层 -->
-          <!-- <div class="hotCity" v-if="false">
-            <p>热门城市</p>
+        <!-- 切换城市弹出菜单 -->
+        <el-popover
+          ref="popover"
+          placement="bottom-start"
+          trigger="focus"
+          v-model="cityVisible"
+          @show="cgShow"
+        >
+          <div class="hotCity" :class="isSwitch?'active':''">
+            <p v-show="isSwitch">热门城市</p>
             <ul>
-              <li @click="hotCityClick('广州市')">广州市</li>
-              <li @click="hotCityClick('杭州市')">杭州市</li>
-              <li @click="hotCityClick('上海市')">上海市</li>
+              <li
+                v-for="(item, index) in matchCity"
+                :key="index"
+                @click="hotCityClick(item.name)"
+              >{{item.name}}</li>
             </ul>
-          </div> -->
-          <!-- <p>这是一段内容这是一段内容确定删除吗？</p>
-          <div style="text-align: right; margin: 0">
-            <el-button size="mini" type="text" @click="cityVisible = false">取消</el-button>
-            <el-button type="primary" size="mini" @click="cityVisible = false">确定</el-button>
-          </div>-->
-        <!-- </el-popover> -->
-        <!-- 所有城市列表 -->
-        <transition name="el-zoom-in-top">
-          <!-- <citiesList
-            @handleClickCity="handleClickCity"
-            @handleLabel="handleLabel"
-            data="departCity"
-            v-show="isShowDepartCity"
-          />-->
-        </transition>
+          </div>
+          <el-input slot="reference" v-model="form.name" placeholder="切换城市" @input="cgInput"></el-input>
+        </el-popover>
       </el-form-item>
       <el-form-item>
         <el-date-picker
@@ -123,7 +111,10 @@ export default {
       },
       isShowDepartCity: true, //是否显示出发输入框所有城市
       visible: false, //人数确定弹出层
-      cityVisible: false
+      cityVisible: false,
+      hotCity: [{ name: "广州市" }, { name: "杭州市" }, { name: "上海市" }],
+      matchCity: [],
+      isSwitch: false
     };
   },
   watch: {
@@ -135,7 +126,7 @@ export default {
     this.setForm();
   },
   methods: {
-    // 热门城市点击事件
+    // 选择弹出菜单事件
     hotCityClick(val) {
       this.form.name = val;
       this.cityVisible = false;
@@ -146,44 +137,34 @@ export default {
       this.form.name = cityName;
       this.form.date = [enterTime || "", leftTime || ""];
     },
-    // 点击每个城市，返回值到输入框中
-    handleClickCity(val) {
-      const { addr, city } = val;
-      this.form[addr] = city;
-    },
-    // 所有城市面板中，点击栏目
-    handleLabel() {
-      this.isLabel = true;
-    },
-    // 切换城市输入远程搜索
-    async querySearchAsync(val, cb) {
-      val = val.trim();
-      cb([]);
-      if (val.length) {
+    // 切换城市弹出菜单显示
+    cgShow() {
+      if (this.form.name && this.matchCity.length === 0) {
         this.cityVisible = false;
-        this.$store.dispatch("hotel/getCities", val).then(res => {
-          if (res.total > 0) {
-            const data = res.data.map(item => ({
-              value: item.name
-            }));
-            cb(data);
-          }
-        });
-      } else {
-        this.cityVisible = true;
+        this.cgGetCity(this.form.name);
+      }
+      if (this.form.name === "") {
+        this.matchCity = this.hotCity;
+        this.isSwitch = true;
       }
     },
-    // 点击切换城市
-    handleCity() {
-      if (this.form.name) {
-        this.cityVisible = false;
+    // 切换城市输入事件
+    cgInput() {
+      const val = this.form.name;
+      if (val === "") {
+        this.matchCity = this.hotCity;
+        this.isSwitch = true;
       } else {
-        this.cityVisible = true;
+        this.cgGetCity(val);
       }
     },
-    // 切换城市下拉选择
-    handleSelect(item) {
-      // console.log(item);
+    // 切换城市远程搜索
+    cgGetCity(val) {
+      this.$store.dispatch("hotel/getCities", val).then(res => {
+        this.matchCity = res.data;
+        this.cityVisible = true;
+        this.isSwitch = false;
+      });
     },
     // 点击人数下拉框
     handleDown() {
@@ -218,6 +199,16 @@ export default {
 
 <style scoped lang="less">
 .hotCity {
+  line-height: 30px;
+  li {
+    padding-left: 10px;
+  }
+  li:hover {
+    background: #efefef;
+    cursor: pointer;
+  }
+}
+.hotCity.active {
   position: relative;
   z-index: 99999;
   overflow: hidden;

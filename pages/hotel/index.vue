@@ -81,7 +81,6 @@ export default {
     this.reset();
     this.$axios({ url: `/hotels?id=185` }).then(res => {
       const { data } = res;
-      console.log(data);
     });
   },
   methods: {
@@ -125,7 +124,7 @@ export default {
         const el = document.createElement("script");
         el.src = `http://api.map.baidu.com/location/ip?ak=fb6FEkhIPYHYtO8mRqqczmosHNkhmwuY&coor=gcj02&callback=getCity`;
         document.querySelector(".main").appendChild(el);
-      }, 200);
+      }, 10);
     },
     // 更新页面数据
     async upData() {

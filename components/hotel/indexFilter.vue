@@ -20,15 +20,17 @@
               <el-dropdown placement="bottom-start" :hide-on-click="false">
                 <span class="el-dropdown-link">
                   {{
-                    form[Object.keys(form)[b]].length > 0
-                      ? form[Object.keys(form)[b]].length > 1
-                        ? `已选${form[Object.keys(form)[b]].length}项`
-                        : list[Object.keys(list)[b]].filter(
-                            v => v.id === form[Object.keys(form)[b]][0]
-                          )[0]["name"]
-                      : "不限"
+                  form[Object.keys(form)[b]].length > 0
+                  ? form[Object.keys(form)[b]].length > 1
+                  ? `已选${form[Object.keys(form)[b]].length}项`
+                  : list[Object.keys(list)[b]].filter(
+                  v => v.id === form[Object.keys(form)[b]][0]
+                  )[0]["name"]
+                  : "不限"
                   }}
-                  <i class="el-icon-arrow-down el-icon--right"></i>
+                  <i
+                    class="el-icon-arrow-down el-icon--right"
+                  ></i>
                 </span>
                 <el-dropdown-menu
                   slot="dropdown"
@@ -39,65 +41,17 @@
                       v-for="(item, index) in list[Object.keys(list)[b]]"
                       :key="index"
                     >
-                      <el-checkbox :label="item.id" style="display:block">{{
+                      <el-checkbox :label="item.id" style="display:block">
+                        {{
                         item.name
-                      }}</el-checkbox>
+                        }}
+                      </el-checkbox>
                     </el-dropdown-item>
                   </el-checkbox-group>
                 </el-dropdown-menu>
               </el-dropdown>
             </div>
           </el-col>
-          <!-- <el-col :span="6">
-            <div>住宿类型</div>
-            <div>
-              <el-dropdown placement="bottom-start" :hide-on-click="false">
-                <span class="el-dropdown-link">
-                  下拉菜单
-                  <i class="el-icon-arrow-down el-icon--right"></i>
-                </span>
-                <el-dropdown-menu slot="dropdown" style="min-width:160px;overflow:hidden">
-                  <el-checkbox-group v-model="form.hoteltype_in">
-                    <el-dropdown-item v-for="(item, index) in list.types" :key="index">
-                      <el-checkbox :label="item.id" style="display:block">{{item.name}}</el-checkbox>
-                    </el-dropdown-item>
-                  </el-checkbox-group>
-                </el-dropdown-menu>
-              </el-dropdown>
-            </div>
-          </el-col>
-          <el-col :span="6">
-            <div>酒店设施</div>
-            <div>
-              <el-dropdown placement="bottom-start" :hide-on-click="false">
-                <span class="el-dropdown-link">
-                  下拉菜单
-                  <i class="el-icon-arrow-down el-icon--right"></i>
-                </span>
-                <el-dropdown-menu slot="dropdown" style="min-width:160px;overflow:hidden">
-                  <el-dropdown-item v-for="(item, index) in list.assets" :key="index">
-                    <el-radio v-model="form.hotellevel" :label="item.id">{{item.name}}</el-radio>
-                  </el-dropdown-item>
-                </el-dropdown-menu>
-              </el-dropdown>
-            </div>
-          </el-col>
-          <el-col :span="6">
-            <div>酒店品牌</div>
-            <div>
-              <el-dropdown placement="bottom-start" :hide-on-click="false">
-                <span class="el-dropdown-link">
-                  下拉菜单
-                  <i class="el-icon-arrow-down el-icon--right"></i>
-                </span>
-                <el-dropdown-menu slot="dropdown" style="height:200px;overflow-y:auto">
-                  <el-dropdown-item v-for="(item, index) in list.brands" :key="index">
-                    <el-radio v-model="form.hotellevel" :label="item.id">{{item.name}}</el-radio>
-                  </el-dropdown-item>
-                </el-dropdown-menu>
-              </el-dropdown>
-            </div>
-          </el-col>-->
         </el-row>
       </el-col>
     </el-row>
