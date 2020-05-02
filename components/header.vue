@@ -11,10 +11,12 @@
 
       <!-- 菜单栏 -->
       <el-row type="flex" class="navs">
-        <nuxt-link to="/">首页</nuxt-link>
-        <nuxt-link to="/post">旅游攻略</nuxt-link>
-        <nuxt-link to="/hotel">酒店</nuxt-link>
-        <nuxt-link to="/air">国内机票</nuxt-link>
+        <nuxt-link
+          :to="item.path"
+          v-for="(item, index) in menu"
+          :key="index"
+          :class="$route.path==item.path?'nuxt-link-exact-active':''"
+        >{{item.name}}</nuxt-link>
       </el-row>
 
       <!-- 登录/用户信息 -->
@@ -51,6 +53,28 @@
 </template>
 <script>
 export default {
+  data() {
+    return {
+      menu: [
+        {
+          path: "/",
+          name: "首页"
+        },
+        {
+          path: "/post",
+          name: "旅游攻略"
+        },
+        {
+          path: "/hotel",
+          name: "酒店"
+        },
+        {
+          path: "/air",
+          name: "国内机票"
+        }
+      ]
+    };
+  },
   methods: {
     // 用户退出
     handleLogout() {
