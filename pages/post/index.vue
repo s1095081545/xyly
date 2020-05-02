@@ -1,15 +1,21 @@
 <template>
-  <div>
-      攻略
-  </div>
+  <Recommend />
 </template>
 
 <script>
+import Recommend from "@/components/post/recommend";
 export default {
-
-}
+  data() {
+    return {
+      
+    };
+  },
+  components: {
+    Recommend
+  },
+ 
+};
 </script>
 
 <style>
-
 </style>
