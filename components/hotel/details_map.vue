@@ -23,7 +23,7 @@
                 :key="index"
               >
                 <span>{{ item.name }}</span>
-                <span>0.14公里</span>
+                <span>{{ distanceList[index] }}公里</span>
               </li>
             </ol>
             <ol v-if="activeName === 'second'">
@@ -33,7 +33,7 @@
                 :key="index"
               >
                 <span>{{ item.name }}</span>
-                <span>0.18公里</span>
+                <span>{{ distanceList[index] }}公里</span>
               </li>
             </ol>
           </div>
@@ -50,7 +50,8 @@ export default {
       map: "",
       activeName: "first",
       sceneryList: [],
-      trafficList: []
+      trafficList: [],
+      distanceList: []
     };
   },
   head: {
@@ -64,12 +65,16 @@ export default {
   mounted() {
     setTimeout(() => {
       var map = new AMap.Map("container", {
+        center: [
+          +this.$store.state.hotel.location.longitude,
+          +this.$store.state.hotel.location.latitude
+        ], //中心点坐标
         resizeEnable: true,
         zoom: 11 //级别
       });
       this.map = map;
       this.getSceneryList();
-    }, 100);
+    }, 200);
   },
   methods: {
     getIcon() {
@@ -111,6 +116,7 @@ export default {
           // console.log(pois);
           this.sceneryList = pois;
           // console.log(this.sceneryList);
+          this.getDistance(this.sceneryList);
         });
       });
       this.getIcon();
@@ -120,6 +126,10 @@ export default {
       if (tab.name === "first") {
         // 在开始规划路线之前呢，先清除掉地图上的其他内容
         this.map = new AMap.Map("container", {
+          center: [
+            +this.$store.state.hotel.location.longitude,
+            +this.$store.state.hotel.location.latitude
+          ], //中心点坐标
           zoom: 11 //级别
         });
         this.getSceneryList();
@@ -127,6 +137,10 @@ export default {
       if (tab.name === "second") {
         // 在开始规划路线之前呢，先清除掉地图上的其他内容
         this.map = new AMap.Map("container", {
+          center: [
+            +this.$store.state.hotel.location.longitude,
+            +this.$store.state.hotel.location.latitude
+          ], //中心点坐标
           zoom: 11 //级别
         });
         //周边查找交通
@@ -152,10 +166,30 @@ export default {
             // console.log(pois);
             this.trafficList = pois;
             // console.log(this.trafficList);
+            this.getDistance(this.trafficList);
           });
         });
         this.getIcon();
       }
+    },
+    getDistance(data) {
+      // console.log(data);
+
+      const p1 = [
+        +this.$store.state.hotel.location.longitude,
+        +this.$store.state.hotel.location.latitude
+      ];
+      // console.log(p1);
+
+      const p2List = data.map(v => {
+        return { lng: v.location.lng, lat: v.location.lat };
+      });
+      this.distanceList = p2List.map(v => {
+        return Number(
+          AMap.GeometryUtil.distance(p1, Object.values(v)) / 1000
+        ).toFixed(2);
+      });
+      // console.log(this.distanceList);
     }
   }
 };

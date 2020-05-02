@@ -118,7 +118,9 @@
       </el-row>
       <el-row class="assets-info">
         <el-col :span="4">品牌信息</el-col>
-        <el-col :span="20">{{ hotelData[0].hotelbrand }}</el-col>
+        <el-col :span="20" v-if="hotelData[0].hotelbrand">{{
+          hotelData[0].hotelbrand.name
+        }}</el-col>
       </el-row>
     </el-row>
     <!-- 评论 -->
@@ -303,11 +305,6 @@ export default {
     .el-table_1_column_3 {
       text-align: center;
       line-height: 24px;
-      // span {
-      //   color: #ff9900;
-      //   font-size: 18px;
-      //   line-height: 26px;
-      // }
     }
   }
   .detailsMap {
