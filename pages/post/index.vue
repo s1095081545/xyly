@@ -6,16 +6,16 @@
 import Recommend from "@/components/post/recommend";
 export default {
   data() {
-    return {
-      
-    };
+    return {};
   },
   components: {
     Recommend
-  },
- 
+  }
 };
 </script>
 
-<style>
+<style scoped lang="less">
+/deep/.el-aside {
+  overflow: visible;
+}
 </style>

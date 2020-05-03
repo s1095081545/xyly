@@ -10,7 +10,7 @@
     </el-header>
     <el-container style="margin-bottom:15px">
       <!-- 侧边栏组件 -->
-      <el-aside style="width:260px; float:left">
+      <el-aside style="width:260px; float:left;overflow:visible">
         <Popular />
       </el-aside>
       <!-- 主要区域组件 -->
