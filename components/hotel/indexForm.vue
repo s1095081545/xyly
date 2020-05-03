@@ -48,8 +48,9 @@
                   placeholder="请选择"
                   style="width:100px"
                   v-model="personForm.bigpeople"
+                  @change="cgChange1"
                 >
-                  <el-option v-for="item in 7" :key="item" :label="item+'成人'" :value="item+'成人'"></el-option>
+                  <el-option v-for="item in 7" :key="item" :label="item" :value="item"></el-option>
                 </el-select>
                 <!-- 选择器2 -->
                 <el-select
@@ -57,13 +58,9 @@
                   size="mini"
                   style="width:100px"
                   v-model="personForm.children"
+                  @change="cgChange2"
                 >
-                  <el-option
-                    v-for="item in 5"
-                    :key="item"
-                    :label="item-1+'儿童'"
-                    :value="item-1+'儿童'"
-                  ></el-option>
+                  <el-option v-for="item in 5" :key="item" :label="item-1" :value="item-1"></el-option>
                 </el-select>
               </div>
             </div>
@@ -171,6 +168,13 @@ export default {
       const { bigpeople, children } = this.personForm;
       this.form.person = bigpeople + children;
       this.visible = false;
+    },
+    // 人数下拉选择器发生改变时
+    cgChange1(val) {
+      this.personForm.bigpeople = val + "成人";
+    },
+    cgChange2(val) {
+      this.personForm.children = val + "儿童";
     },
     // 提交表单
     onSubmit() {

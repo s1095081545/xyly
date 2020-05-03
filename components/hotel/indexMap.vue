@@ -17,6 +17,7 @@
                 等{{cities.scenics.length}}个区域
               </div>
             </div>
+            <div v-if="!cities.scenics ||cities.scenics.length===0">0个区域</div>
           </el-col>
         </el-row>
         <!-- 均价 -->
@@ -49,7 +50,12 @@
                 <i>¥330</i>
               </span>
             </el-tooltip>
-            <el-tooltip class="item" effect="dark" content="Bottom Center 提示文字" placement="bottom">
+            <el-tooltip
+              class="item"
+              effect="dark"
+              content="等级评定是针对房价,设施和服务等各方面水平的综合评估"
+              placement="bottom"
+            >
               <span>
                 <i class="iconfont icon-huiyuanhuangguanguanjun"></i>
                 <i class="iconfont icon-huiyuanhuangguanguanjun"></i>
@@ -60,7 +66,12 @@
                 <i>¥734</i>
               </span>
             </el-tooltip>
-            <el-tooltip class="item" effect="dark" content="Bottom Center 提示文字" placement="bottom">
+            <el-tooltip
+              class="item"
+              effect="dark"
+              content="等级评定是针对房价,设施和服务等各方面水平的综合评估"
+              placement="bottom"
+            >
               <span>
                 <i class="iconfont icon-huiyuanhuangguanguanjun"></i>
                 <i class="iconfont icon-huiyuanhuangguanguanjun"></i>
@@ -102,27 +113,34 @@ export default {
       }
     ]
   },
-  props: ["data", "cities", "currentCity"],
+  props: ["data", "cities"],
   data() {
     return {
       count: 16,
       loading: true,
-      loaded: false
+      loaded: false,
+      timeId: "" //定时器
     };
   },
   watch: {
     data() {
-      setTimeout(() => {
-        this.setMap();
-      }, 100);
+      this.reset();
     }
   },
   mounted() {
-    setTimeout(() => {
-      this.setMap();
-    }, 100);
+    this.reset();
   },
   methods: {
+    reset() {
+      if (!this.data.data) return; //防止data没数据时执行
+      clearInterval(this.timeId);
+      this.timeId = setInterval(() => {
+        if (AMap && AMap.Geocoder) {
+          clearInterval(this.timeId);
+          this.setMap();
+        }
+      }, 100);
+    },
     setMap() {
       // 定义标记
       const div = document.createElement("div");
@@ -173,7 +191,6 @@ export default {
       var map = new AMap.Map("container", {
         zoom: 11, //级别
         center: [longitude, latitude], //中心点坐标
-        // viewMode: "3D" //使用3D视图
         autoFitView: true // 是否自动调整地图视野使绘制的 Marker点都处于视口的可见范围
       });
 
@@ -196,6 +213,9 @@ export default {
     handleClick() {
       this.count = this.count === 16 ? this.cities.scenics.length : 16;
     }
+  },
+  destroyed() {
+    clearInterval(this.timeId);
   }
 };
 </script>
@@ -210,14 +230,14 @@ export default {
   box-shadow: 0 0 1px 2px #f9849b;
 }
 .layout {
-  height: 260px;
+  min-height: 260px;
   font-size: 14px;
   .right {
     background: #fff;
     height: 100%;
     #container {
+      height: 260px;
       width: 100%;
-      height: 100%;
       background: #fff;
     }
   }
@@ -234,6 +254,7 @@ export default {
     }
   }
   .quyu {
+    padding-right: 20px;
     span {
       margin-right: 20px;
     }

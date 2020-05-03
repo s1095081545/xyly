@@ -4,26 +4,19 @@
       <!-- 面包屑导航 -->
       <el-breadcrumb separator-class="el-icon-arrow-right" class="submenu">
         <el-breadcrumb-item>酒店</el-breadcrumb-item>
-        <el-breadcrumb-item
-          >{{ $route.query.cityName }}酒店预订</el-breadcrumb-item
-        >
+        <el-breadcrumb-item>{{ $route.query.cityName }}酒店预订</el-breadcrumb-item>
       </el-breadcrumb>
 
       <!-- 表单 -->
       <IndexForm />
       <!-- 地图 -->
-      <IndexMap :data="list" :cities="cities" :currentCity="currentCity" />
+      <IndexMap :data="list" :cities="cities" />
       <!-- 筛选过滤 -->
       <IndexFilter />
       <!-- 列表展示 -->
-      <IndexList
-        v-for="(item, index) in list.data"
-        :key="index"
-        :data="item"
-        v-if="list.data"
-      />
+      <IndexList v-for="(item, index) in list.data" :key="index" :data="item" v-if="list.data" />
       <!-- 分页 -->
-      <div class="page" v-if="list.total">
+      <div class="page" v-if="total">
         <el-pagination
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
@@ -35,7 +28,11 @@
         ></el-pagination>
       </div>
       <!-- 没有符合的条件时显示 -->
-      <div class="isnull" v-if="!list.total">暂无符合条件的酒店哦</div>
+      <div class="isnull" id="isnull" ref="isnull" v-show="!total">
+        {{txt}}
+        <i :class="txt?'':'el-icon-loading'"></i>
+        <i>{{txt?'':'加载中。。。'}}</i>
+      </div>
       <!-- main end -->
     </div>
   </div>
@@ -60,20 +57,23 @@ export default {
       pageSize: 10,
       pageIndex: 1,
       total: 1, //总条数
-      currentCity: {}, //当前城市
       list: {}, //存储返回的数据
       cities: [], //城市的数据
-      isRouter: false //是否更新路由
+      isRouter: false, //是否更新路由
+      txt: "",
+      clear: "", //定时器
+      resetTime: "" //初始化的时候用的定时器
     };
   },
   watch: {
-    currentCity() {
-      // 提示信息
-      // this.$message.success(
-      //   `您当前城市是 : ${this.currentCity.address_detail["city"]}`
-      // );
-    },
     $route() {
+      this.txt = "";
+      this.total = 0;
+      clearTimeout(this.clear);
+      this.clear = setTimeout(() => {
+        clearTimeout(this.clear);
+        this.txt = "暂无符合条件的酒店哦";
+      }, 6000);
       this.upData();
     }
   },
@@ -87,12 +87,9 @@ export default {
     reset() {
       // 获取当前城市
       // 如果是从酒店详情页返回的则不重新获取当前位置
-      setTimeout(() => {
+      clearTimeout(this.resetTime);
+      this.resetTime = setTimeout(() => {
         const cities = this.$store.state.hotel.cities;
-        // if (!this.isRouter) {
-        //   this.upData();
-        //   return;
-        // }
         if (cities) {
           this.$router.push({
             path: "hotel",
@@ -109,15 +106,22 @@ export default {
         window.getCity = val => {
           const city = val.content.address_detail["city"];
           this.$store.commit("hotel/setCities", city);
-          // val = val.content;
-          // this.currentCity = val;
-          // this.currentCity.coords = [val.point.x, val.point.y];
           this.$router.push({
             path: "hotel",
             query: {
               cityName: city,
               _start: 1,
               _limit: 10
+            }
+          });
+          // 城市定位弹出框
+          this.$alert(`定位城市是：${city}`, "提示", {
+            confirmButtonText: "确定",
+            callback: action => {
+              this.$message({
+                type: "success",
+                message: `已切换到: ${city}`
+              });
             }
           });
         };
@@ -128,6 +132,7 @@ export default {
     },
     // 更新页面数据
     async upData() {
+      this.list = {};
       const { cityName, ...data } = this.$route.query;
       const { _start, _limit } = data;
       this.pageIndex = (+_start - 1) / +_limit + 1;
@@ -140,7 +145,8 @@ export default {
         // 获取酒店
         this.getHotels(data).then(res => {
           this.list = res;
-          this.total = res.total - 1;
+          this.total = res.total - 1 >= 0 ? res.total - 1 : 0;
+          this.txt = "暂无符合条件的酒店哦";
         });
       }
     },
@@ -194,8 +200,13 @@ export default {
 
 <style scoped lang="less">
 .isnull {
-  line-height: 200px;
+  padding: 100px 0;
+  height: 100px;
+  line-height: 100px;
   text-align: center;
+  i {
+    color: #999;
+  }
 }
 .container {
   // background: #f5f5f5;
