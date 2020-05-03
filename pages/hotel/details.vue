@@ -3,7 +3,9 @@
     <!-- 导航栏 -->
     <el-breadcrumb separator-class="el-icon-arrow-right">
       <el-breadcrumb-item :to="{ path: '/hotel' }">酒店</el-breadcrumb-item>
-      <el-breadcrumb-item :to="{ path: '/hotel' }">广州酒店</el-breadcrumb-item>
+      <el-breadcrumb-item :to="{ path: '/hotel' }"
+        >{{ hotelData[0].real_city }}酒店</el-breadcrumb-item
+      >
       <el-breadcrumb-item>{{ hotelData[0].name }}</el-breadcrumb-item>
     </el-breadcrumb>
     <!-- 酒店名 -->
@@ -41,7 +43,7 @@
         <el-col :span="8" class="list-pics">
           <el-row>
             <el-col :span="12" v-for="(item, index) in imageData" :key="index"
-              ><a href="#"
+              ><a href="javascript:void(0)"
                 ><img :src="item" alt="" @click="handleswitch(index)"/></a
             ></el-col>
           </el-row>
@@ -238,8 +240,10 @@ export default {
       this.percentage = this.hotelData[0].scores.service * 10;
       const { location } = this.hotelData[0];
       const { name } = this.hotelData[0];
+      const { city } = this.hotelData[0];
       this.$store.commit("hotel/setLocation", location);
       this.$store.commit("hotel/setName", name);
+      this.$store.commit("hotel/setCity", city);
     });
   },
   methods: {

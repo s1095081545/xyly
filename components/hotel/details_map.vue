@@ -51,7 +51,8 @@ export default {
       activeName: "first",
       sceneryList: [],
       trafficList: [],
-      distanceList: []
+      distanceList: [],
+      timeId: ""
     };
   },
   head: {
@@ -63,7 +64,10 @@ export default {
     ]
   },
   mounted() {
-    setTimeout(() => {
+    clearInterval(this.timeId);
+    this.timeId = setInterval(() => {
+      if (!AMap || !AMap.PlaceSearch) return;
+      clearInterval(this.timeId);
       var map = new AMap.Map("container", {
         center: [
           +this.$store.state.hotel.location.longitude,
@@ -74,7 +78,10 @@ export default {
       });
       this.map = map;
       this.getSceneryList();
-    }, 200);
+    }, 1000);
+  },
+  destroyed() {
+    clearInterval(this.timeId);
   },
   methods: {
     getIcon() {
@@ -100,7 +107,7 @@ export default {
           type: "风景", // 兴趣点类别
           pageSize: 10, // 单页显示结果条数
           pageIndex: 1, // 页码
-          city: "020", // 兴趣点城市
+          city: this.$store.state.hotel.city.code, // 兴趣点城市
           citylimit: true, //是否强制限制在设置的城市内搜索
           map: this.map, // 展现结果的地图实例
           // panel: "panel", // 结果列表将在此容器中进行展示。
@@ -110,7 +117,7 @@ export default {
           +this.$store.state.hotel.location.longitude,
           +this.$store.state.hotel.location.latitude
         ]; //中心点坐标
-        placeSearch.searchNearBy("", cpoint, 1500, (status, result) => {
+        placeSearch.searchNearBy("", cpoint, 2000, (status, result) => {
           // console.log(result);
           const { pois } = result.poiList;
           // console.log(pois);
@@ -126,6 +133,7 @@ export default {
       if (tab.name === "first") {
         // 在开始规划路线之前呢，先清除掉地图上的其他内容
         this.map = new AMap.Map("container", {
+          resizeEnable: true,
           center: [
             +this.$store.state.hotel.location.longitude,
             +this.$store.state.hotel.location.latitude
@@ -137,6 +145,7 @@ export default {
       if (tab.name === "second") {
         // 在开始规划路线之前呢，先清除掉地图上的其他内容
         this.map = new AMap.Map("container", {
+          resizeEnable: true,
           center: [
             +this.$store.state.hotel.location.longitude,
             +this.$store.state.hotel.location.latitude
@@ -150,7 +159,7 @@ export default {
             type: "地铁|公交", // 兴趣点类别
             pageSize: 10, // 单页显示结果条数
             pageIndex: 1, // 页码
-            city: "020", // 兴趣点城市
+            city: this.$store.state.hotel.city.code, // 兴趣点城市
             citylimit: true, //是否强制限制在设置的城市内搜索
             map: this.map, // 展现结果的地图实例
             // panel: "panel", // 结果列表将在此容器中进行展示。
@@ -160,7 +169,7 @@ export default {
             +this.$store.state.hotel.location.longitude,
             +this.$store.state.hotel.location.latitude
           ]; //中心点坐标
-          placeSearch.searchNearBy("", cpoint, 1500, (status, result) => {
+          placeSearch.searchNearBy("", cpoint, 2000, (status, result) => {
             // console.log(result);
             const { pois } = result.poiList;
             // console.log(pois);

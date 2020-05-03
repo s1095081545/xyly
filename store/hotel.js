@@ -2,7 +2,8 @@ export const state = () => {
   return {
     location: {},
     name: "",
-    cities: ''
+    cities: '',
+    city: {}
   };
 };
 export const mutations = {
@@ -14,6 +15,9 @@ export const mutations = {
   },
   setCities(state, data) {
     state.cities = data;
+  },
+  setCity(state, data) {
+    state.city = data;
   }
 };
 
