@@ -40,6 +40,7 @@ export default {
   plugins: [
     "@/plugins/element-ui",
     { src: "@/plugins/localStorage.js", ssr: false },
+    { src: "@/plugins/sentry.js", ssr: false },
     "@/plugins/axios.js",
     "@/plugins/site.js"
   ],

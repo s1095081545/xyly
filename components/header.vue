@@ -15,7 +15,7 @@
           :to="item.path"
           v-for="(item, index) in menu"
           :key="index"
-          :class="$route.path==item.path?'nuxt-link-exact-active':''"
+          :class="$route.path.indexOf(item.path)!==-1?item.path==='/'?'':'nuxt-link-exact-active':''"
         >{{item.name}}</nuxt-link>
       </el-row>
 
