@@ -79,9 +79,9 @@ export default {
   },
   mounted() {
     this.reset();
-    this.$axios({ url: `/hotels?id=185` }).then(res => {
-      const { data } = res;
-    });
+    // this.$axios({ url: `/hotels?id=185` }).then(res => {
+    //   const { data } = res;
+    // });
   },
   methods: {
     reset() {
