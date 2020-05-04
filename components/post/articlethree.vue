@@ -1,27 +1,44 @@
 <template>
   <div>
-    <div class="img-three" v-for="(item,index) in recommendList" :key="index">
-      <h3 style="cursor:pointer;">{{item.title}}</h3>
-      <p style="cursor:pointer;" v-html="item.content"></p>
-      <div class="imgs">
-        <img :src="item.images[0]" style="cursor:pointer;" />
-        <img :src="item.images[1]" style="cursor:pointer;" />
-        <img :src="item.images[2]" style="cursor:pointer;" />
+    <div class="img-three">
+      <nuxt-link :to="`/post/detail?id=${recommendList.id}`">
+        <h3 style="cursor:pointer;">{{recommendList.title}}</h3>
+      </nuxt-link>
+
+      <nuxt-link :to="`/post/detail?id=${recommendList.id}`">
+        <p style="cursor:pointer;" v-html="recommendList.summary"></p>
+      </nuxt-link>
+
+      <div class="imgs" v-if="recommendList.images.length>0">
+        <nuxt-link :to="`/post/detail?id=${recommendList.id}`">
+          <img :src="recommendList.images[0]" style="cursor:pointer;" />
+        </nuxt-link>
+
+        <nuxt-link :to="`/post/detail?id=${recommendList.id}`">
+          <img :src="recommendList.images[1]" style="cursor:pointer;" />
+        </nuxt-link>
+
+        <nuxt-link :to="`/post/detail?id=${recommendList.id}`">
+          <img :src="recommendList.images[2]" style="cursor:pointer;" />
+        </nuxt-link>
       </div>
       <div class="footers">
         <div class="usernames">
           <i class="el-icon-location-outline">
-            <span>{{item.cityName}} by</span>
+            <span>{{recommendList.cityName}} by</span>
           </i>
           <div class="users">
-            <img :src="$axios.defaults.baseURL+item.account.defaultAvatar" style="cursor:pointer;" />
-            <span style="cursor:pointer;">{{item.account.nickname}}</span>
+            <img
+              :src="$axios.defaults.baseURL+recommendList.account.defaultAvatar"
+              style="cursor:pointer;"
+            />
+            <span style="cursor:pointer;color:orange">{{recommendList.account.nickname}}</span>
             <i class="el-icon-view">
-              <span>{{item.watch}}</span>
+              <span>{{recommendList.watch||0}}</span>
             </i>
           </div>
         </div>
-        <div class="zan">{{item.like}} 赞</div>
+        <div class="zan">{{recommendList.like||0}} 赞</div>
       </div>
     </div>
   </div>
@@ -31,10 +48,7 @@
 export default {
   props: {
     // 数据
-    recommendList: {
-      type: Array,
-      default: []
-    }
+    recommendList: {}
   }
 };
 </script>
@@ -47,11 +61,18 @@ export default {
     font-weight: normal;
     border-top: 1px solid #ddd;
     padding-top: 20px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    &:hover {
+      color: orange;
+    }
   }
   p {
     font-size: 14px;
+    line-height: 20px;
     color: #666;
-    height: 55px;
+    height: 60px;
     margin-top: 20px;
     display: -webkit-box;
     -webkit-box-orient: vertical;
@@ -66,6 +87,7 @@ export default {
     img {
       width: 220px;
       height: 150px;
+      object-fit: cover;
     }
   }
   .footers {
@@ -78,7 +100,7 @@ export default {
       display: flex;
       align-items: center;
       .el-icon-location-outline {
-        color: #ddd;
+        color: #999;
         font-size: 12px;
         span {
           margin-left: 5px;
@@ -89,7 +111,7 @@ export default {
         margin-left: 10px;
         align-items: center;
         span {
-          color: #ddd;
+          color: #999;
           margin-left: 5px;
           font-size: 12px;
         }
@@ -98,7 +120,7 @@ export default {
           height: 16px;
         }
         i {
-          color: #ddd;
+          color: #999;
           margin-left: 10px;
         }
       }

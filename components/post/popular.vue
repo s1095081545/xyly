@@ -43,11 +43,17 @@ export default {
   methods: {
     //点击左侧菜单栏的弹出框的每一项
     cgClick(val) {
-      console.log(val);
+      let { start, limit, city } = this.$route.query;
+      this.$router.push({
+        query: {
+          start: 1,
+          limit: limit || 3,
+          city: val
+        }
+      });
     },
     path() {
       setTimeout(v => {
-        // console.log(111);
         this.$router.push({ path: "#" });
       }, 2000);
     }
