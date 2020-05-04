@@ -140,7 +140,7 @@
             disabled
             show-score
             text-color="#ff9900"
-            score-template="{value}"
+            score-template="{value}分"
             class="satrt"
           >
           </el-rate>
@@ -235,7 +235,7 @@ export default {
         id: id
       }
     }).then(res => {
-      console.log(res);
+      // console.log(res);
       this.hotelData = res.data.data;
       this.percentage = this.hotelData[0].scores.service * 10;
       const { location } = this.hotelData[0];

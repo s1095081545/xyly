@@ -1,9 +1,5 @@
 <template>
   <div>
-    <script
-      type="text/javascript"
-      src="https://webapi.amap.com/maps?v=1.4.15&key=622d46935167ebb769b70ee6d72adf3f&plugin=AMap.PlaceSearch"
-    ></script>
     <el-row type="flex" align="center" :gutter="20">
       <!-- container 中不能添加内容 -->
       <el-col :span="16" class="map-view">
@@ -21,6 +17,7 @@
                 class="poi-list-item"
                 v-for="(item, index) in sceneryList"
                 :key="index"
+                @mouseenter="getMapcenter(item, index)"
               >
                 <span>{{ item.name }}</span>
                 <span>{{ distanceList[index] }}公里</span>
@@ -31,6 +28,7 @@
                 class="poi-list-item"
                 v-for="(item, index) in trafficList"
                 :key="index"
+                @mouseenter="getMapcenter(item, index)"
               >
                 <span>{{ item.name }}</span>
                 <span>{{ distanceList[index] }}公里</span>
@@ -52,7 +50,8 @@ export default {
       sceneryList: [],
       trafficList: [],
       distanceList: [],
-      timeId: ""
+      timeId: "",
+      p2List: []
     };
   },
   head: {
@@ -60,6 +59,13 @@ export default {
       {
         rel: "stylesheet",
         href: "//at.alicdn.com/t/font_1790148_s2ohpfp3nec.css"
+      }
+    ],
+    script: [
+      {
+        type: "text/javascript",
+        src:
+          "https://webapi.amap.com/maps?v=1.4.15&key=622d46935167ebb769b70ee6d72adf3f&plugin=AMap.PlaceSearch"
       }
     ]
   },
@@ -104,20 +110,19 @@ export default {
       AMap.service(["AMap.PlaceSearch"], () => {
         //构造地点查询类
         var placeSearch = new AMap.PlaceSearch({
-          type: "风景", // 兴趣点类别
+          type: "风景名胜", // 兴趣点类别
           pageSize: 10, // 单页显示结果条数
           pageIndex: 1, // 页码
           city: this.$store.state.hotel.city.code, // 兴趣点城市
           citylimit: true, //是否强制限制在设置的城市内搜索
           map: this.map, // 展现结果的地图实例
-          // panel: "panel", // 结果列表将在此容器中进行展示。
           autoFitView: true // 是否自动调整地图视野使绘制的 Marker点都处于视口的可见范围
         });
         var cpoint = [
           +this.$store.state.hotel.location.longitude,
           +this.$store.state.hotel.location.latitude
         ]; //中心点坐标
-        placeSearch.searchNearBy("", cpoint, 2000, (status, result) => {
+        placeSearch.searchNearBy("", cpoint, 10000, (status, result) => {
           // console.log(result);
           const { pois } = result.poiList;
           // console.log(pois);
@@ -162,14 +167,13 @@ export default {
             city: this.$store.state.hotel.city.code, // 兴趣点城市
             citylimit: true, //是否强制限制在设置的城市内搜索
             map: this.map, // 展现结果的地图实例
-            // panel: "panel", // 结果列表将在此容器中进行展示。
             autoFitView: true // 是否自动调整地图视野使绘制的 Marker点都处于视口的可见范围
           });
           var cpoint = [
             +this.$store.state.hotel.location.longitude,
             +this.$store.state.hotel.location.latitude
           ]; //中心点坐标
-          placeSearch.searchNearBy("", cpoint, 2000, (status, result) => {
+          placeSearch.searchNearBy("", cpoint, 10000, (status, result) => {
             // console.log(result);
             const { pois } = result.poiList;
             // console.log(pois);
@@ -190,15 +194,30 @@ export default {
       ];
       // console.log(p1);
 
-      const p2List = data.map(v => {
+      this.p2List = data.map(v => {
         return { lng: v.location.lng, lat: v.location.lat };
       });
-      this.distanceList = p2List.map(v => {
+      // console.log(Object.values(this.p2List[0]));
+
+      this.distanceList = this.p2List.map(v => {
         return Number(
           AMap.GeometryUtil.distance(p1, Object.values(v)) / 1000
         ).toFixed(2);
       });
       // console.log(this.distanceList);
+    },
+    getMapcenter(item, index) {
+      this.map.setCenter(Object.values(this.p2List[index])); //设置地图中心点
+      setTimeout(() => {
+        //构建信息窗体中显示的内容
+        var info = [item.name];
+        var infoWindow = new AMap.InfoWindow({
+          content: info.join("") //使用默认信息窗体框样式，显示信息内容
+        });
+        infoWindow.on("open");
+        infoWindow.on("close");
+        infoWindow.open(this.map, Object.values(this.p2List[index])); //指定位置
+      }, 200);
     }
   }
 };
@@ -221,13 +240,4 @@ export default {
     cursor: pointer;
   }
 }
-// #panel {
-//   position: absolute;
-//   background-color: white;
-//   max-height: 90%;
-//   overflow-y: auto;
-//   top: 10px;
-//   right: 10px;
-//   width: 280px;
-// }
 </style>
