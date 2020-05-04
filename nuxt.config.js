@@ -34,9 +34,14 @@ export default {
   /*
    ** Plugins to load before mounting the App
    */
+  script: [
+    { src: "https://hm.baidu.com/hm.js?3f42b1c4daa716fbe156f1b643a2edeb" }
+  ],
   plugins: [
     "@/plugins/element-ui",
     { src: "@/plugins/localStorage.js", ssr: false },
+    // { src: "@/plugins/sentry.js", ssr: false },
+    { src: "@/plugins/site.js", ssr: false },
     "@/plugins/axios.js"
   ],
   /*

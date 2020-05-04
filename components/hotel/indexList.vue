@@ -4,49 +4,48 @@
       <el-col :span="19">
         <el-row>
           <el-col :span="10">
-            <img src="https://img1.dowebok.com/5119.png" alt />
+            <nuxt-link :to="`/hotel/details?id=${data.id}`">
+              <img :src="data.photos" alt />
+            </nuxt-link>
           </el-col>
           <el-col :span="14" class="center">
-            <h2>锦江之星(吴泾店)</h2>
-            <p>jin jiang zhi xing (shang hai min hang wu jing dian)</p>
+            <nuxt-link :to="`/hotel/details?id=${data.id}`">
+              <h2>{{data.name}}</h2>
+            </nuxt-link>
+            <p>{{data.alias}}</p>
             <div class="pingfen">
               <!-- 评分 -->
-              <el-rate disabled show-score text-color="#ff9900" score-template="{value}"></el-rate>
+              <el-rate
+                disabled
+                show-score
+                :value="data.stars"
+                text-color="#ff9900"
+                score-template="{value}分"
+              ></el-rate>
               <span>
-                <i>56</i> 条评价
+                <i>{{data.all_remarks}}</i> 条评价
               </span>
               <span>
-                <i>7</i> 篇游记
+                <i>{{data.num_collected}}</i> 篇游记
               </span>
             </div>
             <div class="dingwei">
-              <i class="el-icon-location"></i> 位于: 剑川路165号(近龙吴路)
+              <i class="el-icon-location"></i>
+              位于: {{data.address}}
             </div>
           </el-col>
         </el-row>
       </el-col>
       <!-- 右 -->
       <el-col :span="5" class="right">
-        <div class="r_row">
-          <span>携程</span>
-          <span>
-            <span class="price">￥289</span>起
-            <i class="el-icon-arrow-right"></i>
-          </span>
-        </div>
-        <div class="r_row">
-          <span>艺龙</span>
-          <span>
-            <span class="price">￥289</span>起
-            <i class="el-icon-arrow-right"></i>
-          </span>
-        </div>
-        <div class="r_row">
-          <span>Hotels.com</span>
-          <span>
-            <span class="price">￥289</span>起
-            <i class="el-icon-arrow-right"></i>
-          </span>
+        <div class="r_row" v-for="(item, index) in data.products" :key="index">
+          <a href="https://hotels.ctrip.com/hotel/694679.html" target="_banlk">
+            <span>{{item.name}}</span>
+            <span>
+              <span class="price">￥{{item.price}}</span>起
+              <i class="el-icon-arrow-right"></i>
+            </span>
+          </a>
         </div>
       </el-col>
     </el-row>
@@ -54,7 +53,14 @@
 </template>
 
 <script>
-export default {};
+export default {
+  props: {
+    data: {
+      type: Object,
+      default: {}
+    }
+  }
+};
 </script>
 
 <style scoped lang="less">
@@ -95,6 +101,11 @@ export default {};
   }
   .right {
     padding-top: 20px;
+    a {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+    }
     .r_row {
       padding: 0 20px 0 10px;
       color: #333;

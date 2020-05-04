@@ -8,80 +8,46 @@
           <span>0-4000</span>
         </div>
         <div>
-          <el-slider :show-tooltip="false"></el-slider>
+          <el-slider v-model="form.price_lt" :max="4000"></el-slider>
         </div>
       </el-col>
       <!-- 其他筛选 -->
       <el-col :span="18">
         <el-row class="other">
-          <el-col :span="6">
-            <div>住宿等级</div>
+          <el-col :span="6" v-for="(a, b) in items" :key="b">
+            <div>{{ a }}</div>
             <div>
-              <el-dropdown placement="bottom-start">
+              <el-dropdown placement="bottom-start" :hide-on-click="false">
                 <span class="el-dropdown-link">
-                  下拉菜单
-                  <i class="el-icon-arrow-down el-icon--right"></i>
+                  {{
+                  form[Object.keys(form)[b]].length > 0
+                  ? form[Object.keys(form)[b]].length > 1
+                  ? `已选${form[Object.keys(form)[b]].length}项`
+                  : list[Object.keys(list)[b]].filter(
+                  v => v.id === form[Object.keys(form)[b]][0]
+                  )[0]["name"]
+                  : "不限"
+                  }}
+                  <i
+                    class="el-icon-arrow-down el-icon--right"
+                  ></i>
                 </span>
-                <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item icon="el-icon-plus">黄金糕3werty</el-dropdown-item>
-                  <el-dropdown-item icon="el-icon-circle-plus">狮子头</el-dropdown-item>
-                  <el-dropdown-item icon="el-icon-circle-plus-outline">螺蛳粉</el-dropdown-item>
-                  <el-dropdown-item icon="el-icon-check">双皮奶</el-dropdown-item>
-                  <el-dropdown-item icon="el-icon-circle-check">蚵仔煎</el-dropdown-item>
-                </el-dropdown-menu>
-              </el-dropdown>
-            </div>
-          </el-col>
-          <el-col :span="6">
-            <div>住宿类型</div>
-            <div>
-              <el-dropdown placement="bottom-start">
-                <span class="el-dropdown-link">
-                  下拉菜单
-                  <i class="el-icon-arrow-down el-icon--right"></i>
-                </span>
-                <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item icon="el-icon-plus">黄金糕3werty</el-dropdown-item>
-                  <el-dropdown-item icon="el-icon-circle-plus">狮子头</el-dropdown-item>
-                  <el-dropdown-item icon="el-icon-circle-plus-outline">螺蛳粉</el-dropdown-item>
-                  <el-dropdown-item icon="el-icon-check">双皮奶</el-dropdown-item>
-                  <el-dropdown-item icon="el-icon-circle-check">蚵仔煎</el-dropdown-item>
-                </el-dropdown-menu>
-              </el-dropdown>
-            </div>
-          </el-col>
-          <el-col :span="6">
-            <div>酒店设施</div>
-            <div>
-              <el-dropdown placement="bottom-start">
-                <span class="el-dropdown-link">
-                  下拉菜单
-                  <i class="el-icon-arrow-down el-icon--right"></i>
-                </span>
-                <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item icon="el-icon-plus">黄金糕3werty</el-dropdown-item>
-                  <el-dropdown-item icon="el-icon-circle-plus">狮子头</el-dropdown-item>
-                  <el-dropdown-item icon="el-icon-circle-plus-outline">螺蛳粉</el-dropdown-item>
-                  <el-dropdown-item icon="el-icon-check">双皮奶</el-dropdown-item>
-                  <el-dropdown-item icon="el-icon-circle-check">蚵仔煎</el-dropdown-item>
-                </el-dropdown-menu>
-              </el-dropdown>
-            </div>
-          </el-col>
-          <el-col :span="6">
-            <div>酒店品牌</div>
-            <div>
-              <el-dropdown placement="bottom-start">
-                <span class="el-dropdown-link">
-                  下拉菜单
-                  <i class="el-icon-arrow-down el-icon--right"></i>
-                </span>
-                <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item icon="el-icon-plus">黄金糕3werty</el-dropdown-item>
-                  <el-dropdown-item icon="el-icon-circle-plus">狮子头</el-dropdown-item>
-                  <el-dropdown-item icon="el-icon-circle-plus-outline">螺蛳粉</el-dropdown-item>
-                  <el-dropdown-item icon="el-icon-check">双皮奶</el-dropdown-item>
-                  <el-dropdown-item icon="el-icon-circle-check">蚵仔煎</el-dropdown-item>
+                <el-dropdown-menu
+                  slot="dropdown"
+                  style="min-width:160px;overflow-y:auto;max-height:260px"
+                >
+                  <el-checkbox-group v-model="form[Object.keys(form)[b]]">
+                    <el-dropdown-item
+                      v-for="(item, index) in list[Object.keys(list)[b]]"
+                      :key="index"
+                    >
+                      <el-checkbox :label="item.id" style="display:block">
+                        {{
+                        item.name
+                        }}
+                      </el-checkbox>
+                    </el-dropdown-item>
+                  </el-checkbox-group>
                 </el-dropdown-menu>
               </el-dropdown>
             </div>
@@ -93,7 +59,48 @@
 </template>
 
 <script>
-export default {};
+export default {
+  name: "indexFilter",
+  data() {
+    return {
+      form: {
+        hotellevel_in: [],
+        hoteltype_in: [],
+        hotelasset_in: [],
+        hotelbrand_in: [],
+        price_lt: 4000
+      },
+      list: {
+        levels: [],
+        types: [],
+        assets: [],
+        brands: []
+      },
+      items: ["住宿等级", "住宿类型", "酒店设施", "酒店品牌"]
+    };
+  },
+  watch: {
+    form: {
+      handler() {
+        this.$router.push({
+          path: "hotel",
+          query: {
+            ...this.$route.query,
+            ...this.form,
+            _start: 1
+          }
+        });
+      },
+      deep: true
+    }
+  },
+  mounted() {
+    this.$axios({ url: `/hotels/options` }).then(res => {
+      const { data } = res.data;
+      this.list = data;
+    });
+  }
+};
 </script>
 
 <style scoped lang="less">
