@@ -14,7 +14,9 @@
     </div>
     <div class="tabs">
       <h3>推荐攻略</h3>
-      <el-button type="primary" icon="el-icon-edit ">写游记</el-button>
+      <nuxt-link to="/post/create">
+        <el-button type="primary" icon="el-icon-edit ">写游记</el-button>
+      </nuxt-link>
     </div>
 
     <div v-if="recommendList.data&&recommendList.data.length!=0">
