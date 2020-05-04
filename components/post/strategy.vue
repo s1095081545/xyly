@@ -12,19 +12,28 @@
       <h3>推荐攻略</h3>
       <el-button type="primary" icon="el-icon-edit ">写游记</el-button>
     </div>
-    <!-- 写的游记列表 -->
 
-    <div class="article" v-for="(item,index) in recommendList" :key="index">
+    <!-- 写的游记列表 -->
+    <div class="article">
       <!-- 三张图的组件 -->
-      <Articlethree v-if=" item.images.length === 3" :recommendList="recommendList" />
-      <!-- 一张图的组件 -->
-      <Articleone v-if=" item.images.length === 1" :recommendList="recommendList" />
-      <!-- 无张图的组件 -->
-      <Articlezero v-if=" item.images.length === 0" :recommendList="recommendList" />
-      <!-- 二张图的组件 -->
-      <Articletwo v-if=" item.images.length === 2" :recommendList="recommendList" />
-      <!-- 四张图的组件 -->
-      <Articlefour v-if=" item.images.length === 4" :recommendList="recommendList" />
+      <div v-for="(item,index) in recommendList" :key="index">
+        <Articlethree
+          v-if="item.images.length === 3 || item.images.length >= 4"
+          :recommendList="recommeindList"
+        />
+      </div>
+      <div v-for="(item,index) in recommendList" :key="index">
+        <!-- 一张图的组件 -->
+        <Articleone v-if="item.images.length === 1" :recommendList="recommendList" />
+      </div>
+      <div v-for="(item,index) in recommendList" :key="index">
+        <!-- 无张图的组件 -->
+        <Articlezero v-if="item.images.length === 0" :recommendList="recommendList" />
+      </div>
+      <div v-for="(item,index) in recommendList" :key="index">
+        <!-- 二张图的组件 -->
+        <Articletwo v-if="item.images.length === 2" :recommendList="recommendList" />
+      </div>
     </div>
   </div>
 </template>
@@ -37,51 +46,49 @@ import Articleone from "@/components/post/articleone";
 import Articlezero from "@/components/post/articlezero";
 // 二张图的组件
 import Articletwo from "@/components/post/articletwo";
-// 四张图的组件
-import Articlefour from "@/components/post/articlefour";
+
 export default {
   data() {
     return {
       //  输入框的值
       value: "",
       // 文章总数据列表
-      recommendList: [],
+      recommendList: []
       // ------
       // 第几页的意思
-      starts: 1,
+      // starts: 0,
       // end是几，下面请求的数据就有几条
-      end: 3,
-      // 文章总页数
-      total: 0
+      // end: 3
     };
   },
   components: {
     Articlethree,
     Articleone,
     Articlezero,
-    Articletwo,
-    Articlefour
+    Articletwo
   },
   mounted() {
     // 设置url地址的参数
-    this.$router.push({
-      query: {
-        start: this.starts,
-        limit: this.end
-      }
-    });
+    // this.$router.push({
+    //   query: {
+    //     start: this.starts,
+    //     limit: this.end
+    //   }
+    // });
     this.$axios({
-      url: "/posts",
-      params: {
-        _start: this.starts,
-        _limit: this.end
-      }
+      url: "/posts"
+      // params: {
+      //   _start: this.starts,
+      //   _limit: this.end
+      // }
     }).then(res => {
       console.log(res);
       const { data } = res.data;
       this.recommendList = data;
       console.log(this.recommendList);
-      this.total = this.recommendList.total;
+      this.recommendList.forEach(v => {
+        console.log(v);
+      });
     });
   },
   methods: {

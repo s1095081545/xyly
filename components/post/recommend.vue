@@ -10,7 +10,7 @@
     </el-header>
     <el-container style="margin-bottom:15px">
       <!-- 侧边栏组件 -->
-      <el-aside style="width:260px; float:left;overflow:visible">
+      <el-aside style="width:260px; float:left">
         <Popular />
       </el-aside>
       <!-- 主要区域组件 -->
@@ -24,7 +24,7 @@
           :page-sizes="[3, 6, 9, 12]"
           :page-size="pageSize"
           layout="total, sizes, prev, pager, next, jumper"
-          :total="total"
+          :total="100"
           style="width:700px; margin-top:10px;margin-left:25px"
         ></el-pagination>
       </el-main>
@@ -40,14 +40,22 @@ import Strategy from "@/components/post/strategy";
 export default {
   data() {
     return {
+      // 当前是 第几页
       pageIndex: 1,
-      pageSize: 100,
-      total: 100
+      pageSize: 50
     };
   },
   components: {
     Popular,
     Strategy
+  },
+  mounted() {
+    // this.$axios({
+    //   url: "/posts"
+    // }).then(res => {
+    //   console.log(res);
+    //   const { data } = res.data;
+    // });
   },
   methods: {
     handleSizeChange(val) {

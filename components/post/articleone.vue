@@ -2,13 +2,13 @@
   <el-row style="width: 700px">
     <div class="articleone" v-for="(item,index) in recommendList" :key="index">
       <div class="lefts">
-        <img :src="item.images" style="cursor:pointer;" />
+        <img :src="item.images[0]" style="cursor:pointer;" />
       </div>
       <div class="contents">
         <div class="rights">
           <h3 style="cursor:pointer;">{{item.title}}</h3>
           <div class="contentList">
-            <a href="#" v-html="item.content" v-if="item.content.img===show"></a>
+            <a href="#" v-html="item.content"></a>
           </div>
         </div>
         <div class="footers">
@@ -37,7 +37,11 @@
 <script>
 export default {
   props: {
-    recommendList: {}
+    // 数据
+    recommendList: {
+      type: Array,
+      default: []
+    }
   },
   data() {
     return {

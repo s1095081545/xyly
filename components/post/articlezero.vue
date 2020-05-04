@@ -29,7 +29,11 @@
 <script>
 export default {
   props: {
-    recommendList: {}
+    // 数据
+    recommendList: {
+      type: Array,
+      default: []
+    }
   }
 };
 </script>

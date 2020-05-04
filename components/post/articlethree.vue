@@ -30,7 +30,11 @@
 <script>
 export default {
   props: {
-    recommendList: {}
+    // 数据
+    recommendList: {
+      type: Array,
+      default: []
+    }
   }
 };
 </script>
@@ -47,7 +51,13 @@ export default {
   p {
     font-size: 14px;
     color: #666;
+    height: 55px;
     margin-top: 20px;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
   .imgs {
     display: flex;
