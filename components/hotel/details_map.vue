@@ -17,10 +17,10 @@
                 class="poi-list-item"
                 v-for="(item, index) in sceneryList"
                 :key="index"
-                @mouseenter="getMapcenter(item, index)"
+                @mouseenter="getMapcenter(item)"
               >
                 <span>{{ item.name }}</span>
-                <span>{{ distanceList[index] }}公里</span>
+                <span>{{ Number(item.distance / 1000).toFixed(2) }}公里</span>
               </li>
             </ol>
             <ol v-if="activeName === 'second'">
@@ -28,10 +28,10 @@
                 class="poi-list-item"
                 v-for="(item, index) in trafficList"
                 :key="index"
-                @mouseenter="getMapcenter(item, index)"
+                @mouseenter="getMapcenter(item)"
               >
                 <span>{{ item.name }}</span>
-                <span>{{ distanceList[index] }}公里</span>
+                <span>{{ Number(item.distance / 1000).toFixed(2) }}公里</span>
               </li>
             </ol>
           </div>
@@ -49,9 +49,7 @@ export default {
       activeName: "first",
       sceneryList: [],
       trafficList: [],
-      distanceList: [],
-      timeId: "",
-      p2List: []
+      timeId: ""
     };
   },
   head: {
@@ -90,6 +88,9 @@ export default {
     clearInterval(this.timeId);
   },
   methods: {
+    // showInfoOver() {
+    //   console.log(666);
+    // },
     getIcon() {
       //自定义内容
       var content = `<i class="iconfont icon-jiudian" style="color:#3c94f9 ;font-size:25px "></i>`;
@@ -99,11 +100,12 @@ export default {
           +this.$store.state.hotel.location.longitude,
           +this.$store.state.hotel.location.latitude
         ], // 基点位置
-        offset: new AMap.Pixel(-17, -42), // 相对于基点的偏移位置
+        // offset: new AMap.Pixel(-17, -42), // 相对于基点的偏移位置
         title: this.$store.state.hotel.name
       });
       // 将创建的点标记添加到已有的地图实例：
       this.map.add(marker);
+      // marker.on("mouseover", this.showInfoOver);
     },
     //周边查找风景
     getSceneryList() {
@@ -127,8 +129,7 @@ export default {
           const { pois } = result.poiList;
           // console.log(pois);
           this.sceneryList = pois;
-          // console.log(this.sceneryList);
-          this.getDistance(this.sceneryList);
+          console.log(this.sceneryList);
         });
       });
       this.getIcon();
@@ -136,7 +137,6 @@ export default {
     handleClick(tab) {
       // console.log(tab);
       if (tab.name === "first") {
-        // 在开始规划路线之前呢，先清除掉地图上的其他内容
         this.map = new AMap.Map("container", {
           resizeEnable: true,
           center: [
@@ -148,7 +148,6 @@ export default {
         this.getSceneryList();
       }
       if (tab.name === "second") {
-        // 在开始规划路线之前呢，先清除掉地图上的其他内容
         this.map = new AMap.Map("container", {
           resizeEnable: true,
           center: [
@@ -179,35 +178,13 @@ export default {
             // console.log(pois);
             this.trafficList = pois;
             // console.log(this.trafficList);
-            this.getDistance(this.trafficList);
           });
         });
         this.getIcon();
       }
     },
-    getDistance(data) {
-      // console.log(data);
-
-      const p1 = [
-        +this.$store.state.hotel.location.longitude,
-        +this.$store.state.hotel.location.latitude
-      ];
-      // console.log(p1);
-
-      this.p2List = data.map(v => {
-        return { lng: v.location.lng, lat: v.location.lat };
-      });
-      // console.log(Object.values(this.p2List[0]));
-
-      this.distanceList = this.p2List.map(v => {
-        return Number(
-          AMap.GeometryUtil.distance(p1, Object.values(v)) / 1000
-        ).toFixed(2);
-      });
-      // console.log(this.distanceList);
-    },
-    getMapcenter(item, index) {
-      this.map.setCenter(Object.values(this.p2List[index])); //设置地图中心点
+    getMapcenter(item) {
+      this.map.setCenter([item.location.lng, item.location.lat]); //设置地图中心点
       setTimeout(() => {
         //构建信息窗体中显示的内容
         var info = [item.name];
@@ -216,7 +193,7 @@ export default {
         });
         infoWindow.on("open");
         infoWindow.on("close");
-        infoWindow.open(this.map, Object.values(this.p2List[index])); //指定位置
+        infoWindow.open(this.map, [item.location.lng, item.location.lat]); //指定位置
       }, 200);
     }
   }
