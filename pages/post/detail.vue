@@ -2,9 +2,51 @@
   <div class="w">
     <el-row :gutter="20">
       <el-col :span="17">
-        <div class="grid-content bg-purple">
-          <!-- 攻略文章组件 -->
-          <DetailArticle :data="articleData" :totals="commentList" />
+        <!-- <div class="grid-content bg-purple"> -->
+        <!-- 攻略文章组件 -->
+        <DetailArticle :data="articleData" :totals="commentList" :isObj="isObj" />
+
+        <div class="comment">
+          <p>评论</p>
+          <!-- 传值部分 -->
+
+          <span class="pop" v-if="isObj.isShow==true?true:false">
+            回复 @{{isObj.name}}
+            <i class="el-icon-close" @click="clear_Show"></i>
+          </span>
+          <div class="enter">
+            <el-input
+              type="textarea"
+              :autosize="{ minRows: 2, maxRows: 4 }"
+              placeholder="请输入内容"
+              v-model="content"
+            ></el-input>
+          </div>
+
+          <el-row type="flex" class="row-bg" justify="space-between">
+            <el-col :span="6">
+              <!-- 上传文件 -->
+              <el-upload
+                :action="$axios.defaults.baseURL + '/upload'"
+                list-type="picture-card"
+                :on-preview="handlePictureCardPreview"
+                :on-remove="handleRemove"
+                :show-file-list="true"
+                :file-list="list"
+                :on-success="uploadSuccess"
+                :on-error="uploadErr"
+                name="files"
+              >
+                <i class="el-icon-plus"></i>
+              </el-upload>
+              <el-dialog :visible.sync="dialogVisible" class="img_up">
+                <img width="100%" :src="dialogImageUrl" alt />
+              </el-dialog>
+            </el-col>
+            <el-col :span="2">
+              <el-button type="primary" @click="handleClick()">提交</el-button>
+            </el-col>
+          </el-row>
           <!-- 评论列表 -->
           <!-- <CommentList /> -->
           <div class="comments" v-for="(item, index) in commentList.data" :key="index">
@@ -43,10 +85,10 @@
             @size-change="handleSizeChange"
             @current-change="handleCurrentChange"
             :current-page="currentPage4"
-            :page-sizes="[100, 200, 300, 400]"
+            :page-sizes="[2,4,6,8]"
             :page-size="100"
             layout="total, sizes, prev, pager, next, jumper"
-            :total="400"
+            :total="commentList.total"
           ></el-pagination>
         </div>
       </el-col>
@@ -77,24 +119,32 @@ export default {
       // 文章评论
       commentList: [],
       moment,
-
-      currentPage1: 5,
-      currentPage2: 5,
-      currentPage3: 5,
-      currentPage4: 4,
+      //输入框内容
+      content: "",
+      dialogImageUrl: "",
+      dialogVisible: false,
+      currentPage4: 1,
+      content: "",
       isObj: {
-        isshow: false,
-
+        isShow: "",
         id: "",
         name: ""
-      }
+      },
+      follow: "",
+      pics: [],
+      list: [],
+      // 分页
+      li: 2,
+      st: 0,
+      // th: 7,
+      total: 0
     };
   },
   watch: {
     $route() {
       this.getDetail();
       this.getComments();
-      console.log(123);
+      // console.log(123);
     }
 
     // console.log(to, from);
@@ -123,23 +173,31 @@ export default {
         // console.log(res);
         const { data } = res.data;
         this.articleData = data[0];
-        console.log("数据", this.articleData);
+        // console.log("数据", this.articleData);
       });
     },
     //评论列表请求
     // 配置请求的基准URL地址
 
     getComments() {
+      let i = +this.li;
+      let k = +this.st;
+      let j = this.th;
+      console.log(i, k, j);
+
       this.$axios({
         url: "posts/comments",
         params: {
           post: this.$route.query.id, //文章ID
           // _sort:, //排序
-          _limit: 5, //条数
-          _start: 0 //页数
+          _limit: this.li, //条数
+          _start: this.st //页数
         }
       }).then(res => {
         const { data } = res;
+        this.total = res.total;
+        console.log(res);
+
         this.commentList = data;
         // this.commentList.parent = data.parent;
         console.log("评论数据", this.commentList);
@@ -147,9 +205,17 @@ export default {
     },
     handleSizeChange(val) {
       console.log(`每页 ${val} 条`);
+      this.li = val;
+      this.st = 0;
+      console.log(this.li, this.st);
+      this.getComments();
     },
     handleCurrentChange(val) {
       console.log(`当前页: ${val}`);
+      this.CommentList = [];
+      this.st = val;
+      this.getComments();
+      console.log(this.li, this.st);
     },
     // 点击回复事件
     on_click(id, name) {
@@ -158,6 +224,72 @@ export default {
       this.isObj.name = name;
       this.isObj.id = id;
       console.log(this.isObj);
+    },
+    handleRemove(file, fileList) {
+      console.log(file, fileList);
+      console.log(this.list);
+    },
+    handlePictureCardPreview(file) {
+      this.dialogImageUrl = file.url;
+      this.dialogVisible = true;
+    },
+    uploadSuccess(response, file, fileList) {
+      // console.log("你好");
+
+      // console.log(2, file);
+      this.pics.push(file.response[0]);
+    },
+    uploadErr(response, file, fileList) {
+      // console.log(2, response, file, fileList);
+    },
+    clear_Show() {
+      this.isObj = "";
+    },
+    // clear_Show() {},
+    //发布评论
+
+    handleClick() {
+      // 声明对象
+      let data = {
+        post: this.$route.query.id //文章ID  this.$route.query.id
+      };
+      //判断内容有没有
+      if (this.content) {
+        data.content = this.content; //内容
+      }
+      if (this.isObj.id) {
+        data.follow = this.isObj.id; //回复ID
+      }
+      if (this.pics) {
+        data.pics = this.pics;
+      }
+      console.log(this.data);
+
+      this.$axios({
+        url: "/comments",
+        method: "post",
+        headers: {
+          Authorization: `Bearer ` + this.$store.state.user.userInfo.token
+        },
+        data: data
+      }).then(res => {
+        console.log("发布评论", res);
+        this.$message({
+          message: res.data.message,
+          type: "success"
+        });
+        this.isObj = "";
+        this.content = "";
+        // this.$router.push({
+        //   path: "/post/detail",
+        //   query: {
+        //     id: this.id
+        //   }
+        // });
+        this.getComments();
+      });
+      //获取图片
+      console.log(this.list);
     }
   }
 };
@@ -184,7 +316,7 @@ export default {
   padding: 20px;
   width: 100%;
   // height: 300px;
-  border: 1px red solid;
+  border: 1px #eee solid;
   .header {
     font-size: 12px;
 
@@ -218,6 +350,54 @@ export default {
       // float: right;
       text-align: right;
     }
+  }
+}
+.enter {
+  margin-bottom: 5px;
+  margin-top: 10px;
+}
+.comment {
+  p {
+    margin-bottom: 20px;
+  }
+  .el-button--primary {
+    padding: 7px 15px;
+    font-size: 12px;
+  }
+}
+.pop {
+  // position: relative;
+  padding: 5px;
+  margin-bottom: 10px;
+  background-color: rgba(244, 244, 245);
+  font-size: 12px;
+  width: 120px;
+  height: 25px;
+  line-height: 25px;
+  i {
+    // position: absolute;
+    // top: -1px;
+    margin-top: 5px;
+    margin-left: 3px;
+    cursor: pointer;
+    font-size: 14px;
+    &:hover {
+      // padding: 5px;
+      background-color: rgba(144, 147, 153);
+      color: #fff;
+
+      border-radius: 50%;
+      height: 14px;
+      width: 14px;
+    }
+  }
+}
+/deep/.img_up {
+  /deep/img {
+    float: left;
+    margin: 5px;
+    width: 98px;
+    height: 98px;
   }
 }
 </style>
