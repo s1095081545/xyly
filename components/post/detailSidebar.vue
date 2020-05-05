@@ -16,7 +16,11 @@
         }"
       >
         <el-col :span="12" v-if="item.images[0]">
-          <img :src="item.images[0]" alt="" srcset="" />
+          <img
+            :src="$axios.defaults.baseURL + item.images[0]"
+            alt=""
+            srcset=""
+          />
         </el-col>
         <!-- $axios.defaults.baseURL -->
         <el-col :span="12" class="explain">
@@ -44,8 +48,8 @@ export default {
     this.$axios({
       url: "/posts/recommend",
       params: {
-        id: this.$route.query.id
-        // id: 4
+        // id: this.$route.query.id
+        id: 4
       }
     }).then(res => {
       this.list = res.data.data;
@@ -59,6 +63,7 @@ export default {
 .aside {
   width: 280px;
   height: 121px;
+  // background-color: red;
 }
 h3 {
   padding-bottom: 10px;
@@ -67,8 +72,8 @@ h3 {
 img {
   width: 100px;
   height: 80px;
-  // width: 100%;
-  // height: 100%;
+  width: 100%;
+  height: 100%;
 
   object-fit: cover;
 }

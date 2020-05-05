@@ -8,9 +8,7 @@
     <h1>{{ data.title }}</h1>
     <div class="date clearfix">
       <div>
-        <span
-          >攻略：{{ moment(data.created_at).format("YYYY-MM-DD h:mm") }}</span
-        >
+        <span>攻略：{{ moment(data.created_at).format("YYYY-MM-DD h:mm") }}</span>
 
         <span>阅读： {{ data.watch }}</span>
       </div>
@@ -29,7 +27,13 @@
       </div>
     </el-row>
     <div class="comment">
-      <p>评论</p>
+      <p>评论 {{isShow}}</p>
+      <!-- 传值部分 -->
+
+      <span class="pop" v-if="isObj.isShow">
+        回复 @{{isObj}}
+        <i class="el-icon-close"></i>
+      </span>
       <div class="enter">
         <el-input
           type="textarea"
@@ -41,13 +45,6 @@
 
       <el-row type="flex" class="row-bg" justify="space-between">
         <el-col :span="6">
-          <!--  -->
-          <!-- :headers="{
-              Authorization: `Bearer ` + this.$store.state.user.userInfo.token
-            }" -->
-          <!-- :data="{
-              id
-            }" -->
           <!-- 上传文件 -->
           <el-upload
             :action="$axios.defaults.baseURL + '/upload'"
@@ -58,9 +55,8 @@
             :file-list="list"
             :on-success="uploadSuccess"
             :on-error="uploadErr"
+            name="files"
           >
-            <!-- :auto-upload="false" -->
-            <!--  :http-request="up" -->
             <i class="el-icon-plus"></i>
           </el-upload>
           <el-dialog :visible.sync="dialogVisible">
@@ -72,7 +68,7 @@
         </el-col>
       </el-row>
       <div>
-        {{ data.id }}
+        <!-- {{ data.id }} -->
         <!-- {{ this.$store.state.user.userInfo.token }} -->
       </div>
     </div>
@@ -87,6 +83,7 @@ export default {
     return {
       dialogImageUrl: "",
       dialogVisible: false,
+      //发言内容
       content: "",
       moment,
       // 评论ID
@@ -94,7 +91,9 @@ export default {
       id: 4,
       follow: "",
       pics: [],
-      list: []
+      list: [],
+
+      isShow: false
     };
   },
 
@@ -106,6 +105,12 @@ export default {
     totals: {
       type: Object,
       default: {}
+    },
+    isObj: {
+      type: Object,
+      default: function() {
+        return {};
+      }
     }
   },
   methods: {
@@ -120,53 +125,51 @@ export default {
     uploadSuccess(response, file, fileList) {
       // console.log("你好");
 
-      console.log(2, response, file, fileList);
+      // console.log(2, file);
+      this.pics.push(file.response[0]);
     },
     uploadErr(response, file, fileList) {
-      console.log(2, response, file, fileList);
+      // console.log(2, response, file, fileList);
     },
-    // up(con){
-    //   this.$axios({
-    //     url:"con.action",
-    //     dada
-    //   })
-    // },
+
     //发布评论
     handleClick() {
       // 声明对象
       let data = {
-        pics: this.pics, //图片
-        post: 4 //文章ID  this.$route.query.id
+        post: this.$route.query.id //文章ID  this.$route.query.id
       };
       //判断内容有没有
       if (this.content) {
         data.content = this.content; //内容
       }
       if (this.follow) {
-        datta.follow = this.follow; //回复ID
+        data.follow = this.follow; //回复ID
+      }
+      if (this.pics) {
+        data.pics = this.pics;
       }
       console.log(this.list);
 
-      // this.$axios({
-      //   url: "/comments",
-      //   method: "post",
-      //   headers: {
-      //     Authorization: `Bearer ` + this.$store.state.user.userInfo.token
-      //   },
-      //   data: data
-      // }).then(res => {
-      //   console.log("发布评论", res);
-      //   this.$message({
-      //     message: res.data.message,
-      //     type: "success"
-      //   });
-      //   this.$router.push({
-      //     path: "/post/detail",
-      //     query: {
-      //       id: this.id
-      //     }
-      //   });
-      // });
+      this.$axios({
+        url: "/comments",
+        method: "post",
+        headers: {
+          Authorization: `Bearer ` + this.$store.state.user.userInfo.token
+        },
+        data: data
+      }).then(res => {
+        console.log("发布评论", res);
+        this.$message({
+          message: res.data.message,
+          type: "success"
+        });
+        this.$router.push({
+          path: "/post/detail",
+          query: {
+            id: this.id
+          }
+        });
+      });
       //获取图片
       console.log(this.list);
     }
@@ -251,11 +254,6 @@ h1 {
 }
 
 .comment {
-  //   input {
-  //     border: 0; // 去除未选中状态边框
-  //     outline: none; // 去除选中状态边框
-  //     // background-color: rgba(0, 0, 0, 0); // 透明背景
-  //   }
   p {
     margin-bottom: 20px;
   }
@@ -266,6 +264,7 @@ h1 {
 }
 .enter {
   margin-bottom: 5px;
+  margin-top: 10px;
 }
 .max {
   width: 700px;
@@ -288,6 +287,33 @@ h1 {
       width: 80px;
       height: 80px;
       object-fit: cover;
+    }
+  }
+}
+.pop {
+  // position: relative;
+  padding: 5px;
+  margin-bottom: 10px;
+  background-color: rgba(244, 244, 245);
+  font-size: 12px;
+  width: 120px;
+  height: 25px;
+  line-height: 25px;
+  i {
+    // position: absolute;
+    // top: -1px;
+    margin-top: 5px;
+    margin-left: 3px;
+    cursor: pointer;
+    font-size: 14px;
+    &:hover {
+      // padding: 5px;
+      background-color: rgba(144, 147, 153);
+      color: #fff;
+
+      border-radius: 50%;
+      height: 14px;
+      width: 14px;
     }
   }
 }
