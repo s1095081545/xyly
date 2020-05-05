@@ -4,7 +4,7 @@
       <el-col :span="17">
         <!-- <div class="grid-content bg-purple"> -->
         <!-- 攻略文章组件 -->
-        <DetailArticle :data="articleData" :totals="commentList" :isObj="isObj" />
+        <DetailArticle :data="articleData" :totals="commentList" />
 
         <div class="comment">
           <p>评论</p>
@@ -64,7 +64,7 @@
             <!-- {{ moment().format("MMMM Do YYYY, h:mm:ss") }} -->
             <div class="nexine">
               <!-- 组件 -->
-              <CommentList :data="item.parent" v-if="item.parent" :isObj="isObj" />
+              <CommentList :data="item.parent" v-if="item.parent" @thg="thg" />
               <div>{{ item.content }}</div>
               <div
                 class="nexine_img clearfix"
@@ -196,18 +196,18 @@ export default {
       }).then(res => {
         const { data } = res;
         this.total = res.total;
-        console.log(res);
+        // console.log(res);
 
         this.commentList = data;
         // this.commentList.parent = data.parent;
-        console.log("评论数据", this.commentList);
+        // console.log("评论数据", this.commentList);
       });
     },
     handleSizeChange(val) {
       console.log(`每页 ${val} 条`);
       this.li = val;
       this.st = 0;
-      console.log(this.li, this.st);
+      // console.log(this.li, this.st);
       this.getComments();
     },
     handleCurrentChange(val) {
@@ -215,7 +215,7 @@ export default {
       this.CommentList = [];
       this.st = val;
       this.getComments();
-      console.log(this.li, this.st);
+      // console.log(this.li, this.st);
     },
     // 点击回复事件
     on_click(id, name) {
@@ -224,6 +224,11 @@ export default {
       this.isObj.name = name;
       this.isObj.id = id;
       console.log(this.isObj);
+    },
+    //父组件
+    thg(Obj) {
+      console.log("收到了", Obj);
+      this.Obj = Obj;
     },
     handleRemove(file, fileList) {
       console.log(file, fileList);

@@ -4,12 +4,9 @@
     <div class="follows">
       <div class="header">
         <div>
-          <img
-            :src="$axios.defaults.baseURL + data.account.defaultAvatar"
-            alt
-          />
+          <img :src="$axios.defaults.baseURL + data.account.defaultAvatar" alt />
           <i>{{ data.account.nickname }}</i>
-          <span>{{ moment(data.created).format("YYYY-MM-DD h:mm") }} </span>
+          <span>{{ moment(data.created).format("YYYY-MM-DD h:mm") }}</span>
         </div>
       </div>
       <div>{{ data.content }}</div>
@@ -17,7 +14,7 @@
         <img :src="$axios.defaults.baseURL + item.url" alt />
       </div>
       <div class="on_focus">
-        <a class="on_focus" href="javascript:;">回复</a>
+        <a class="on_focus" href="javascript:;" @click="on_click(data.account.nickname,data.id)">回复</a>
       </div>
     </div>
   </div>
@@ -44,6 +41,18 @@ export default {
 
   components: {
     // CommentList
+  },
+  methods: {
+    on_click(name, id) {
+      // console.log("子组件触发了", name, id);
+      this.$emit("thg", {
+        name,
+        id,
+        isShow: true
+      });
+      console.log("子组件触发了", name, id);
+      console.log(this.$parent);
+    }
   }
 };
 </script>
