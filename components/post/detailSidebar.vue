@@ -1,12 +1,7 @@
 <template>
   <div class="aside" v-if="list">
     <h3>相关攻略</h3>
-    <el-row
-      class="item_gba"
-      :gutter="10"
-      v-for="(item, index) in list"
-      :key="index"
-    >
+    <div class="row" :gutter="10" v-for="(item, index) in list" :key="index">
       <nuxt-link
         :to="{
           path: '/post/detail',
@@ -15,23 +10,28 @@
           }
         }"
       >
-        <el-col :span="12" v-if="item.images[0]">
-          <img
-            :src="$axios.defaults.baseURL + item.images[0]"
-            alt=""
-            srcset=""
-          />
-        </el-col>
-        <!-- $axios.defaults.baseURL -->
-        <el-col :span="12" class="explain">
+        <div v-if="!item.images[0]" class="danhang">
           <p>{{ item.title }}</p>
-          <span
-            >{{ moment(item.created).format("YYYY-MM-DD h:mm") }} 阅读
-            {{ item.watch }}</span
-          >
-        </el-col></nuxt-link
-      >
-    </el-row>
+          <span>
+            {{ moment(item.created).format("YYYY-MM-DD h:mm") }} 阅读
+            {{ item.watch }}
+          </span>
+        </div>
+        <el-row v-if="item.images[0]" class="youimg">
+          <el-col :span="8">
+            <img :src="item.images[0]" alt srcset />
+          </el-col>
+          <!-- $axios.defaults.baseURL -->
+          <el-col :span="16" class="zi">
+            <p>{{ item.title }}</p>
+            <span>
+              {{ moment(item.created).format("YYYY-MM-DD h:mm") }} 阅读
+              {{ item.watch }}
+            </span>
+          </el-col>
+        </el-row>
+      </nuxt-link>
+    </div>
   </div>
 </template>
 
@@ -53,7 +53,6 @@ export default {
       }
     }).then(res => {
       this.list = res.data.data;
-      console.log("1", this.list);
     });
   }
 };
@@ -102,6 +101,31 @@ img {
       font-size: 12px;
       color: #999;
     }
+  }
+}
+.danhang {
+  padding: 10px;
+  border-bottom: 1px solid #eaeaea;
+  p {
+    margin-bottom: 20px;
+  }
+  span {
+    color: #999;
+    font-size: 14px;
+  }
+}
+.youimg {
+  padding: 10px;
+  border-bottom: 1px solid #eaeaea;
+  .zi {
+    padding-left: 10px;
+  }
+  p {
+    margin-bottom: 20px;
+  }
+  span {
+    color: #999;
+    font-size: 14px;
   }
 }
 </style>

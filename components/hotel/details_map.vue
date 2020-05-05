@@ -129,7 +129,6 @@ export default {
           const { pois } = result.poiList;
           // console.log(pois);
           this.sceneryList = pois;
-          console.log(this.sceneryList);
         });
       });
       this.getIcon();

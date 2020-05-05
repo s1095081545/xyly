@@ -1,10 +1,12 @@
 <template>
   <div class="main">
-    <div class="header">
-      <span>旅游攻略</span>
-      <span>/</span>
-      <span>攻略详情</span>
-    </div>
+    <!-- 面包屑导航 -->
+    <el-breadcrumb separator-class="el-icon-arrow-right" class="submenu">
+      <el-breadcrumb-item>
+        <nuxt-link to="/post">旅游攻略</nuxt-link>
+      </el-breadcrumb-item>
+      <el-breadcrumb-item>{{ $route.query.cityName }}攻略详情</el-breadcrumb-item>
+    </el-breadcrumb>
     <h1>{{ data.title }}</h1>
     <div class="date clearfix">
       <div>
@@ -27,12 +29,12 @@
       </div>
     </el-row>
     <div class="comment">
-      <p>评论 {{isShow}}</p>
+      <p>评论</p>
       <!-- 传值部分 -->
 
-      <span class="pop" v-if="isObj.isShow">
-        回复 @{{isObj}}
-        <i class="el-icon-close"></i>
+      <span class="pop" v-if="huifu.isShow">
+        回复 @{{huifu.name}}
+        <i class="el-icon-close" @click="cgClose"></i>
       </span>
       <div class="enter">
         <el-input
@@ -98,40 +100,23 @@ export default {
   },
 
   props: {
-    data: {
-      type: Object,
-      default: {}
-    },
-    totals: {
-      type: Object,
-      default: {}
-    },
-    isObj: {
-      type: Object,
-      default: function() {
-        return {};
-      }
-    }
+    data: {},
+    totals: {},
+    huifu: {}
   },
   methods: {
-    handleRemove(file, fileList) {
-      console.log(file, fileList);
-      console.log(this.list);
-    },
+    handleRemove(file, fileList) {},
     handlePictureCardPreview(file) {
       this.dialogImageUrl = file.url;
       this.dialogVisible = true;
     },
     uploadSuccess(response, file, fileList) {
-      // console.log("你好");
-
-      // console.log(2, file);
       this.pics.push(file.response[0]);
     },
-    uploadErr(response, file, fileList) {
-      // console.log(2, response, file, fileList);
+    uploadErr(response, file, fileList) {},
+    cgClose() {
+      this.$emit("rehuifu");
     },
-
     //发布评论
     handleClick() {
       // 声明对象
@@ -142,13 +127,15 @@ export default {
       if (this.content) {
         data.content = this.content; //内容
       }
-      if (this.follow) {
-        data.follow = this.follow; //回复ID
+      if (this.huifu.id) {
+        data.follow = this.huifu.id; //回复ID
       }
+      // if (this.follow) {
+      //   data.follow = this.follow; //回复ID
+      // }
       if (this.pics) {
         data.pics = this.pics;
       }
-      console.log(this.list);
 
       this.$axios({
         url: "/comments",
@@ -158,20 +145,16 @@ export default {
         },
         data: data
       }).then(res => {
-        console.log("发布评论", res);
         this.$message({
           message: res.data.message,
           type: "success"
         });
-        this.$router.push({
-          path: "/post/detail",
-          query: {
-            id: this.id
-          }
-        });
+        this.$emit("re");
+        this.content = "";
+        this.list = [];
+        this.pics = [];
       });
       //获取图片
-      console.log(this.list);
     }
   }
 };
@@ -315,6 +298,14 @@ h1 {
       height: 14px;
       width: 14px;
     }
+  }
+}
+.dataimg {
+  h3 {
+    line-height: 40px;
+  }
+  p {
+    line-height: 30px;
   }
 }
 </style>

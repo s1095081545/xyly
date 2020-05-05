@@ -4,15 +4,12 @@
     <div class="follows">
       <div class="header">
         <div>
-          <img
-            :src="$axios.defaults.baseURL + data.account.defaultAvatar"
-            alt
-          />
+          <img :src="$axios.defaults.baseURL + data.account.defaultAvatar" alt />
           <i>{{ data.account.nickname }}</i>
-          <span>{{ moment(data.created).format("YYYY-MM-DD h:mm") }} </span>
+          <span>{{ moment(data.created).format("YYYY-MM-DD h:mm") }}</span>
         </div>
       </div>
-      <div>{{ data.content }}</div>
+      <div class="content">{{ data.content }}</div>
       <div class="follow_img" v-for="(item, index) in data.pics" :key="index">
         <img :src="$axios.defaults.baseURL + item.url" alt />
       </div>
@@ -49,6 +46,14 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.nexine {
+  div {
+    word-wrap: break-word;
+  }
+}
+.content {
+  word-wrap: break-word;
+}
 .follows {
   // position: relative;
   width: 660px;
@@ -56,7 +61,7 @@ export default {
   // height: 50px;
   // border: 1px solid blue;
   padding: 10px;
-  background-color: #eee;
+  background-color: #fafafa;
   .follow_img {
     img {
       // padding: 5px;

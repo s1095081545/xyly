@@ -16,10 +16,7 @@
               :show-message="false"
             >
               <el-form-item prop="title">
-                <el-input
-                  v-model="form.title"
-                  placeholder="请输入标题"
-                ></el-input>
+                <el-input v-model="form.title" placeholder="请输入标题"></el-input>
               </el-form-item>
               <el-form-item prop="content">
                 <!-- 编辑器 -->
@@ -42,9 +39,7 @@
                   style="width:200px"
                   :trigger-on-focus="false"
                 >
-                  <template slot-scope="{ item }">
-                    {{ item.name }}
-                  </template>
+                  <template slot-scope="{ item }">{{ item.name }}</template>
                 </el-autocomplete>
               </el-form-item>
               <!-- 发布 -->
@@ -54,19 +49,14 @@
                   style="margin-right:10px"
                   :loading="loading"
                   @click="cgAdd"
-                  >发布</el-button
-                >
-                或者
-                <el-button type="text" style="color:orange" @click="cgCache"
-                  >保存到草稿箱</el-button
-                >
+                >发布</el-button>或者
+                <el-button type="text" style="color:orange" @click="cgCache">保存到草稿箱</el-button>
                 <el-button
                   type="text"
                   style="color:red"
                   @click="cgItemDel"
                   v-if="listIndex >= 0"
-                  >从草稿箱删除</el-button
-                >
+                >从草稿箱删除</el-button>
               </el-form-item>
             </el-form>
             <!-- 表单 end -->
@@ -157,7 +147,6 @@ export default {
   methods: {
     // 添加图片
     cgImgAdd(file, Editor, cursorLocation) {
-      console.log(Editor);
       const fd = new FormData();
       fd.append("files", file);
 
@@ -168,7 +157,6 @@ export default {
       }).then(res => {
         const url = this.$axios.defaults.baseURL + res.data[0].url;
         Editor.insertEmbed(cursorLocation, "image", url);
-        console.log(url);
       });
     },
     // 选择城市远程搜索
@@ -252,7 +240,6 @@ export default {
           // 确认删除
           this.list.splice(this.listIndex, 1);
           const data = this.list.map(item => ({ ...item }));
-          console.log(this.list);
           this.$store.commit("post/setCreateArticle", data);
           this.$message.success("从草稿箱删除成功");
           this.listIndex = -1;

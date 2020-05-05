@@ -4,7 +4,13 @@
       <el-col :span="17">
         <div class="grid-content bg-purple">
           <!-- 攻略文章组件 -->
-          <DetailArticle :data="articleData" :totals="commentList" />
+          <DetailArticle
+            :data="articleData"
+            :totals="commentList"
+            @re="getComments"
+            :huifu="isObj"
+            @rehuifu="rehuifu"
+          />
           <!-- 评论列表 -->
           <!-- <CommentList /> -->
           <div class="comments" v-for="(item, index) in commentList.data" :key="index">
@@ -18,12 +24,13 @@
                 }}
               </span>
             </div>
+
             <!-- 回复 -->
             <!-- {{ moment().format("MMMM Do YYYY, h:mm:ss") }} -->
             <div class="nexine">
               <!-- 组件 -->
               <CommentList :data="item.parent" v-if="item.parent" :isObj="isObj" />
-              <div>{{ item.content }}</div>
+              <div class="content">{{ item.content }}</div>
               <div
                 class="nexine_img clearfix"
                 v-for="(item1, index) in item.pics"
@@ -39,15 +46,17 @@
           </div>
           <!-- 评论结束 -->
           <!-- 分页 -->
-          <el-pagination
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
-            :current-page="currentPage4"
-            :page-sizes="[100, 200, 300, 400]"
-            :page-size="100"
-            layout="total, sizes, prev, pager, next, jumper"
-            :total="400"
-          ></el-pagination>
+          <div class="page">
+            <el-pagination
+              @size-change="handleSizeChange"
+              @current-change="handleCurrentChange"
+              :current-page="pageIndex"
+              :page-sizes="[5,10, 20]"
+              :page-size="pageSize"
+              layout="total, sizes, prev, pager, next, jumper"
+              :total="commentList.total"
+            ></el-pagination>
+          </div>
         </div>
       </el-col>
       <el-col :span="5">
@@ -83,21 +92,19 @@ export default {
       currentPage3: 5,
       currentPage4: 4,
       isObj: {
-        isshow: false,
-
+        ishow: false,
         id: "",
         name: ""
-      }
+      },
+      pageIndex: 1,
+      pageSize: 5
     };
   },
   watch: {
     $route() {
       this.getDetail();
       this.getComments();
-      console.log(123);
     }
-
-    // console.log(to, from);
   },
   components: {
     //绑定组件
@@ -113,6 +120,14 @@ export default {
     this.getComments();
   },
   methods: {
+    rehuifu() {
+      this.isObj = {
+        ishow: false,
+        id: "",
+        name: ""
+      };
+      this.isObj = { ...this.isObj };
+    },
     getDetail() {
       this.$axios({
         url: "/posts",
@@ -120,10 +135,8 @@ export default {
           id: this.$route.query.id
         }
       }).then(res => {
-        // console.log(res);
         const { data } = res.data;
         this.articleData = data[0];
-        console.log("数据", this.articleData);
       });
     },
     //评论列表请求
@@ -135,35 +148,40 @@ export default {
         params: {
           post: this.$route.query.id, //文章ID
           // _sort:, //排序
-          _limit: 5, //条数
-          _start: 0 //页数
+          _limit: this.pageSize, //条数
+          _start: (this.pageIndex - 1) * this.pageSize //页数
         }
       }).then(res => {
         const { data } = res;
         this.commentList = data;
-        // this.commentList.parent = data.parent;
-        console.log("评论数据", this.commentList);
       });
     },
     handleSizeChange(val) {
-      console.log(`每页 ${val} 条`);
+      this.pageSize = val;
+      this.getComments();
     },
     handleCurrentChange(val) {
-      console.log(`当前页: ${val}`);
+      this.pageIndex = val;
+      this.getComments();
     },
     // 点击回复事件
     on_click(id, name) {
-      // console.log(id, name);
       this.isObj.isShow = true;
       this.isObj.name = name;
       this.isObj.id = id;
-      console.log(this.isObj);
+      this.isObj = { ...this.isObj };
     }
   }
 };
 </script>
 
 <style lang="less" scoped>
+.page {
+  padding: 20px 0 50px;
+}
+.content {
+  word-wrap: break-word;
+}
 .w {
   width: 1000px;
   margin: 0 auto;
@@ -184,7 +202,8 @@ export default {
   padding: 20px;
   width: 100%;
   // height: 300px;
-  border: 1px red solid;
+  border: 1px #eaeaea solid;
+  margin-top: -1px;
   .header {
     font-size: 12px;
 
