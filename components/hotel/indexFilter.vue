@@ -8,7 +8,7 @@
           <span>0-4000</span>
         </div>
         <div>
-          <el-slider v-model="form.price_lt" :max="4000"></el-slider>
+          <el-slider v-model="price_lt" :max="4000" @change="cgChange"></el-slider>
         </div>
       </el-col>
       <!-- 其他筛选 -->
@@ -67,9 +67,9 @@ export default {
         hotellevel_in: [],
         hoteltype_in: [],
         hotelasset_in: [],
-        hotelbrand_in: [],
-        price_lt: 4000
+        hotelbrand_in: []
       },
+      price_lt: 4000,
       list: {
         levels: [],
         types: [],
@@ -99,6 +99,19 @@ export default {
       const { data } = res.data;
       this.list = data;
     });
+  },
+  methods: {
+    cgChange() {
+      this.$router.push({
+        path: "hotel",
+        query: {
+          ...this.$route.query,
+          ...this.form,
+          _start: 1,
+          price_lt: this.price_lt
+        }
+      });
+    }
   }
 };
 </script>
