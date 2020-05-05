@@ -5,12 +5,16 @@
       <el-breadcrumb-item>
         <nuxt-link to="/post">旅游攻略</nuxt-link>
       </el-breadcrumb-item>
-      <el-breadcrumb-item>{{ $route.query.cityName }}攻略详情</el-breadcrumb-item>
+      <el-breadcrumb-item
+        >{{ $route.query.cityName }}攻略详情</el-breadcrumb-item
+      >
     </el-breadcrumb>
     <h1>{{ data.title }}</h1>
     <div class="date clearfix">
       <div>
-        <span>攻略：{{ moment(data.created_at).format("YYYY-MM-DD h:mm") }}</span>
+        <span
+          >攻略：{{ moment(data.created_at).format("YYYY-MM-DD h:mm") }}</span
+        >
 
         <span>阅读： {{ data.watch }}</span>
       </div>
@@ -33,7 +37,7 @@
       <!-- 传值部分 -->
 
       <span class="pop" v-if="huifu.isShow">
-        回复 @{{huifu.name}}
+        回复 @{{ huifu.name }}
         <i class="el-icon-close" @click="cgClose"></i>
       </span>
       <div class="enter">

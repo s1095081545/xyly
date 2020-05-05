@@ -13,15 +13,19 @@
           />
           <!-- 评论列表 -->
           <!-- <CommentList /> -->
-          <div class="comments" v-for="(item, index) in commentList.data" :key="index">
+          <div
+            class="comments"
+            v-for="(item, index) in commentList.data"
+            :key="index"
+          >
             <!-- 头像信息 -->
             <div class="header">
-              <img :src="$axios.defaults.baseURL + item.account.defaultAvatar" />
+              <img
+                :src="$axios.defaults.baseURL + item.account.defaultAvatar"
+              />
               <i>{{ item.account.nickname }}</i>
               <span>
-                {{
-                moment(item.created_at).format("YYYY-MM-DD h:mm")
-                }}
+                {{ moment(item.created_at).format("YYYY-MM-DD h:mm") }}
               </span>
             </div>
 
@@ -29,7 +33,11 @@
             <!-- {{ moment().format("MMMM Do YYYY, h:mm:ss") }} -->
             <div class="nexine">
               <!-- 组件 -->
-              <CommentList :data="item.parent" v-if="item.parent" :isObj="isObj" />
+              <CommentList
+                :data="item.parent"
+                v-if="item.parent"
+                :isObj="isObj"
+              />
               <div class="content">{{ item.content }}</div>
               <div
                 class="nexine_img clearfix"
@@ -40,7 +48,11 @@
                 <img :src="$axios.defaults.baseURL + item1.url" alt />
               </div>
               <div class="on_focus">
-                <a href="javascript:;" @click="on_click(item.id, item.account.nickname)">回复</a>
+                <a
+                  href="javascript:;"
+                  @click="on_click(item.id, item.account.nickname)"
+                  >回复</a
+                >
               </div>
             </div>
           </div>
@@ -51,7 +63,7 @@
               @size-change="handleSizeChange"
               @current-change="handleCurrentChange"
               :current-page="pageIndex"
-              :page-sizes="[5,10, 20]"
+              :page-sizes="[5, 10, 20]"
               :page-size="pageSize"
               layout="total, sizes, prev, pager, next, jumper"
               :total="commentList.total"
