@@ -37,15 +37,14 @@
       <el-row>
         <!-- 大图 -->
         <el-col :span="16" class="main-pic">
-          <img :src="bigImg" alt="" />
+          <el-image :src="bigImg" :preview-src-list="imageData"> </el-image>
         </el-col>
         <!-- 小图 -->
         <el-col :span="8" class="list-pics">
           <el-row>
             <el-col :span="12" v-for="(item, index) in imageData" :key="index"
-              ><a href="javascript:void(0)"
-                ><img :src="item" alt="" @click="handleswitch(index)"/></a
-            ></el-col>
+              ><img :src="item" alt="" @click="handleswitch(index)"
+            /></el-col>
           </el-row>
         </el-col>
       </el-row>
@@ -292,7 +291,7 @@ export default {
   }
   .pic-info {
     .main-pic {
-      img {
+      /deep/ .el-image {
         height: 360px;
         width: 640px;
       }
