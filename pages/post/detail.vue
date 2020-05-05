@@ -7,26 +7,22 @@
           <DetailArticle :data="articleData" :totals="commentList" />
           <!-- 评论列表 -->
           <!-- <CommentList /> -->
-          <div
-            class="comments"
-            v-for="(item, index) in commentList.data"
-            :key="index"
-          >
+          <div class="comments" v-for="(item, index) in commentList.data" :key="index">
             <!-- 头像信息 -->
             <div class="header">
-              <img
-                :src="$axios.defaults.baseURL + item.account.defaultAvatar"
-              />
+              <img :src="$axios.defaults.baseURL + item.account.defaultAvatar" />
               <i>{{ item.account.nickname }}</i>
-              <span>{{
+              <span>
+                {{
                 moment(item.created_at).format("YYYY-MM-DD h:mm")
-              }}</span>
+                }}
+              </span>
             </div>
             <!-- 回复 -->
             <!-- {{ moment().format("MMMM Do YYYY, h:mm:ss") }} -->
             <div class="nexine">
               <!-- 组件 -->
-              <CommentList :data="item.parent" v-if="item.parent" />
+              <CommentList :data="item.parent" v-if="item.parent" :isObj="isObj" />
               <div>{{ item.content }}</div>
               <div
                 class="nexine_img clearfix"
@@ -37,7 +33,7 @@
                 <img :src="$axios.defaults.baseURL + item1.url" alt />
               </div>
               <div class="on_focus">
-                <a href="javascript:;">回复</a>
+                <a href="javascript:;" @click="on_click(item.id, item.account.nickname)">回复</a>
               </div>
             </div>
           </div>
@@ -51,8 +47,7 @@
             :page-size="100"
             layout="total, sizes, prev, pager, next, jumper"
             :total="400"
-          >
-          </el-pagination>
+          ></el-pagination>
         </div>
       </el-col>
       <el-col :span="5">
@@ -86,30 +81,23 @@ export default {
       currentPage1: 5,
       currentPage2: 5,
       currentPage3: 5,
-      currentPage4: 4
+      currentPage4: 4,
+      isObj: {
+        isshow: false,
+
+        id: "",
+        name: ""
+      }
     };
   },
-  beforeRouteUpdate(to, from, next) {
-    // 在当前路由改变，但是该组件被复用时调用
-    // 举例来说，对于一个带有动态参数的路径 /foo/:id，在 /foo/1 和 /foo/2 之间跳转的时候，
-    // 由于会渲染同样的 Foo 组件，因此组件实例会被复用。而这个钩子就会在这个情况下被调用。
-    // 可以访问组件实例 `this`
-    // this.$router.push({
-    //   path: "/post/detail",
-    //   query: {
-    //     id: 4
-    //   }
-    // });
-    if (to.path === from.path) {
-      // this.getDetail();
-      // this.getComments();
-      next();
-    } else if (to.query.id !== form.query.id) {
+  watch: {
+    $route() {
       this.getDetail();
       this.getComments();
-      next();
+      console.log(123);
     }
-    console.log(to, from);
+
+    // console.log(to, from);
   },
   components: {
     //绑定组件
@@ -129,7 +117,7 @@ export default {
       this.$axios({
         url: "/posts",
         params: {
-          id: 4
+          id: this.$route.query.id
         }
       }).then(res => {
         // console.log(res);
@@ -162,6 +150,14 @@ export default {
     },
     handleCurrentChange(val) {
       console.log(`当前页: ${val}`);
+    },
+    // 点击回复事件
+    on_click(id, name) {
+      // console.log(id, name);
+      this.isObj.isShow = true;
+      this.isObj.name = name;
+      this.isObj.id = id;
+      console.log(this.isObj);
     }
   }
 };
